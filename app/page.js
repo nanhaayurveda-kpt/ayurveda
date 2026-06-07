@@ -147,7 +147,7 @@ export default async function HomePage() {
             Start Today — 7 Days Free
           </h2>
           <p className="text-green-300 mb-6 text-sm">
-            No card. No setup fee. Direct support from developer.
+            No card. No setup fees. Direct support from developer.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 text-sm text-green-300">
             <a href="tel:+919996865069" className="hover:text-white">
