@@ -31,7 +31,7 @@ export default function LoginPage() {
             href="/professor-login"
             className="flex items-center justify-center gap-3 w-full border border-green-200 rounded-xl px-4 py-3 text-sm font-medium text-green-700 hover:bg-green-50 transition"
           >
-            👨‍🏫 Professor Login — PIN
+            👨‍🏫 Professors Login — PIN
           </a>
           <a
             href="/student/login"
