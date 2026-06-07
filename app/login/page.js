@@ -1,0 +1,46 @@
+"use client";
+
+export default function LoginPage() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white px-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full max-w-sm text-center">
+        <div className="text-4xl mb-3">🌿</div>
+        <div className="text-2xl font-bold text-green-700 mb-1">
+          Ayurveda College
+        </div>
+        <div className="text-gray-400 text-xs mb-8">
+          College Management Software
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={() => {
+              window.location.href = "/api/auth/login";
+            }}
+            className="flex items-center justify-center gap-3 w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+          >
+            <img
+              src="https://www.google.com/favicon.ico"
+              className="w-5 h-5"
+              alt="Google"
+            />
+            Admin Login — Google
+          </button>
+
+          <a
+            href="/professor-login"
+            className="flex items-center justify-center gap-3 w-full border border-green-200 rounded-xl px-4 py-3 text-sm font-medium text-green-700 hover:bg-green-50 transition"
+          >
+            👨‍🏫 Professor Login — PIN
+          </a>
+          <a
+            href="/student/login"
+            className="flex items-center justify-center gap-3 w-full border border-teal-200 rounded-xl px-4 py-3 text-sm font-medium text-teal-700 hover:bg-teal-50 transition"
+          >
+            🎓 Student Login — Admission No and Phone
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
