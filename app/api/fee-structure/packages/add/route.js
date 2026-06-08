@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import { setFlash } from "@/lib/flash";
 
-const FIXED_TYPES = ["semester", "admission", "practical", "misc"];
+const FIXED_TYPES = ["tuition", "admission", "practical", "hostel", "library", "misc"];
 
 function slugify(s) {
   return s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
