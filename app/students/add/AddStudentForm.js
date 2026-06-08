@@ -152,7 +152,7 @@ export default function AddStudentForm({
             </select>
           </div>
 
-          {/* Course + Semester */}
+          {/* Course + Professional Year */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -174,7 +174,7 @@ export default function AddStudentForm({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Semester <span className="text-red-500">*</span>
+                Professional Year <span className="text-red-500">*</span>
               </label>
               <select
                 name="semester"

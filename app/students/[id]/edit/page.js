@@ -7,7 +7,7 @@ import { notFound, redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import EditStudentForm from "./EditStudentForm";
-import { FACULTIES, FACULTY_COURSES } from "@/lib/courses";
+import { FACULTIES, FACULTY_COURSES, SEMESTERS } from "@/lib/courses";
 
 export default async function EditStudentPage({ params }) {
   const { id } = await params;
@@ -31,14 +31,14 @@ export default async function EditStudentPage({ params }) {
   if (result.length === 0) notFound();
   const s = result[0];
 
-  const semesters = ["1", "2", "3", "4", "5", "6"];
+  const professionalYears = SEMESTERS;
 
   return (
     <EditStudentForm
       s={s}
       faculties={FACULTIES}
       courses={FACULTY_COURSES}
-      semesters={semesters}
+      semesters={professionalYears}
     />
   );
 }
