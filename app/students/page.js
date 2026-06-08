@@ -254,7 +254,7 @@ export default async function StudentsPage({ searchParams }) {
                                         <form
                                           method="POST"
                                           action="/api/students/delete"
-                                          className="inline"
+                                          className="inline-flex items-center"
                                         >
                                           <input
                                             type="hidden"
