@@ -405,6 +405,9 @@ export default async function DashboardPage() {
                 label: "📋 Prof. Attendance",
               },
               { href: "/settings", label: "⚙️ Settings" },
+              { href: "/clinical-logbook", label: "🏥 Clinical Logbook" },
+              { href: "/internship", label: "🩺 Internship" },
+              { href: "/reports/ncism", label: "📑 NCISM Report" },
             ].map((action) => (
               <a
                 key={action.href}
