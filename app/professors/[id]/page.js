@@ -7,7 +7,8 @@ import { eq, and } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
-import { COURSES, SEMESTERS, BAMS_SUBJECTS } from "@/lib/courses";
+import { SEMESTERS, BAMS_SUBJECTS } from "@/lib/courses";
+import DeleteProfessor from "./DeleteProfessor";
 
 const designationLabel = {
   assistant: "Assistant Professor",
@@ -68,11 +69,7 @@ export default async function ProfessorDetailPage({ params }) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4 flex items-center gap-4">
         <div className="w-16 h-16 rounded-full border-2 border-green-100 overflow-hidden bg-gray-50 flex items-center justify-center shrink-0">
           {p.photo_url ? (
-            <img
-              src={p.photo_url}
-              alt={p.name}
-              className="w-full h-full object-cover"
-            />
+            <img src={p.photo_url} alt={p.name} className="w-full h-full object-cover" />
           ) : (
             <span className="text-3xl">👤</span>
           )}
@@ -95,70 +92,49 @@ export default async function ProfessorDetailPage({ params }) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">
-              Qualification
-            </p>
-            <p className="text-sm font-medium text-gray-900">
-              {p.qualification || "—"}
-            </p>
+            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">Qualification</p>
+            <p className="text-sm font-medium text-gray-900">{p.qualification || "—"}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">
-              Phone
-            </p>
-            <p className="text-sm font-medium text-gray-900">
-              {p.phone || "—"}
-            </p>
+            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">Phone</p>
+            <p className="text-sm font-medium text-gray-900">{p.phone || "—"}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">
-              Email
-            </p>
-            <p className="text-sm font-medium text-gray-900">
-              {p.email || "—"}
-            </p>
+            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">Email</p>
+            <p className="text-sm font-medium text-gray-900">{p.email || "—"}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">
-              Joining Date
-            </p>
+            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">Joining Date</p>
             <p className="text-sm font-medium text-gray-900">
-              {p.joining_date
-                ? new Date(p.joining_date).toLocaleDateString("en-IN")
-                : "—"}
+              {p.joining_date ? new Date(p.joining_date).toLocaleDateString("en-IN") : "—"}
             </p>
           </div>
           <div className="col-span-2">
-            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">
-              Login PIN
-            </p>
+            <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">Login PIN</p>
             <div className="flex items-center gap-3">
               <span className="text-xl font-bold tracking-widest text-green-700 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
                 {p.pin || "—"}
               </span>
-              <span className="text-xs text-gray-400">
-                Share with professor
-              </span>
+              <span className="text-xs text-gray-400">Share with professor</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Edit Link */}
-      <div className="mb-4">
+      {/* Edit + Delete */}
+      <div className="flex gap-3 mb-4">
         <Link
           href={`/professors/${p.id}/edit`}
-          className="inline-block bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+          className="flex-1 text-center bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
         >
           ✏️ Edit Professor
         </Link>
+        <DeleteProfessor professorId={p.id} professorName={p.name} />
       </div>
 
       {/* Assigned Subjects */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
-        <h2 className="text-sm font-bold text-gray-900 mb-3">
-          Assigned Subjects
-        </h2>
+        <h2 className="text-sm font-bold text-gray-900 mb-3">Assigned Subjects</h2>
         {subjects.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {subjects.map((s) => (
@@ -167,15 +143,9 @@ export default async function ProfessorDetailPage({ params }) {
                 className="flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-xs font-medium"
               >
                 {s.subject} — {s.course} {s.semester ? `· ${s.semester}` : ""}
-                <form
-                  method="POST"
-                  action="/api/professors/delete-subject"
-                  className="inline-flex items-center"
-                >
+                <form method="POST" action="/api/professors/delete-subject" className="inline-flex items-center">
                   <input type="hidden" name="id" value={s.id} />
-                  <button type="submit" className="text-red-400 ml-1 font-bold">
-                    ×
-                  </button>
+                  <button type="submit" className="text-red-400 ml-1 font-bold">×</button>
                 </form>
               </span>
             ))}
@@ -188,16 +158,10 @@ export default async function ProfessorDetailPage({ params }) {
       {/* Assign Subject */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <h2 className="text-sm font-bold text-gray-900 mb-3">Assign Subject</h2>
-        <form
-          method="POST"
-          action="/api/professors/add-subject"
-          className="space-y-3"
-        >
+        <form method="POST" action="/api/professors/add-subject" className="space-y-3">
           <input type="hidden" name="professor_id" value={p.id} />
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Subject
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Subject</label>
             <select
               name="subject"
               required
@@ -206,34 +170,13 @@ export default async function ProfessorDetailPage({ params }) {
             >
               <option value="">Select Subject...</option>
               {BAMS_SUBJECTS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
+                <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
+          <input type="hidden" name="course" value="BAMS" />
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Course
-            </label>
-            <select
-              name="course"
-              required
-              defaultValue=""
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Select...</option>
-              {COURSES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Professional Year
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Professional Year</label>
             <select
               name="semester"
               defaultValue=""
@@ -241,9 +184,7 @@ export default async function ProfessorDetailPage({ params }) {
             >
               <option value="">All Years</option>
               {SEMESTERS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
+                <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
