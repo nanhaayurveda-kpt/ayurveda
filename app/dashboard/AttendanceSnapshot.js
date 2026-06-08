@@ -148,8 +148,8 @@ export default function AttendanceSnapshot({
                 const d = semMap[key];
                 return (
                   <option key={key} value={key}>
-                    {course} {sem} — P {d.present.length}, A{" "}
-                    {d.absent.length}, N/A {d.na.length}
+                    {sem} — P {d.present.length}, A {d.absent.length}, N/A{" "}
+                    {d.na.length}
                   </option>
                 );
               })}
