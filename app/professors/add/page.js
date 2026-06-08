@@ -38,13 +38,15 @@ export default function AddProfessorPage() {
               <option value="assistant">Assistant Professor</option>
               <option value="associate">Associate Professor</option>
               <option value="professor">Professor</option>
+              <option value="hod">Head of Department</option>
+              <option value="principal">Principal</option>
             </select>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
-              <input type="text" name="qualification" placeholder="e.g. M.Sc, Ph.D"
+              <input type="text" name="qualification" placeholder="e.g. BAMS, MD (Ayu)"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
             </div>
             <div>
@@ -72,6 +74,14 @@ export default function AddProfessorPage() {
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Joining Date</label>
+              <input type="date" name="joining_date"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
             <label className="cursor-pointer bg-green-50 text-green-600 text-xs font-medium px-4 py-2 rounded-lg border border-green-200 inline-block">
@@ -81,8 +91,8 @@ export default function AddProfessorPage() {
             <p className="text-xs text-gray-400 mt-1">PNG, JPG supported.</p>
           </div>
 
-          <p className="text-xs font-bold text-pink-500 pt-2">
-            After saving, go to the professor's profile to assign subjects and courses.
+          <p className="text-xs font-bold text-green-600 pt-2">
+            After saving, go to the professor's profile to assign subjects.
           </p>
 
           <div className="flex gap-3 pt-2">
