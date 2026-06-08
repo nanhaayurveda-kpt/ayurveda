@@ -91,27 +91,7 @@ export default async function StudentsPage({ searchParams }) {
         </div>
       </div>
 
-      {/* Summary */}
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        <div className="bg-green-50 rounded-lg p-3 text-center border border-green-100">
-          <div className="text-lg font-bold text-green-700">
-            {allStudents.length}
-          </div>
-          <div className="text-xs text-green-500">Total</div>
-        </div>
-        <div className="bg-green-50 rounded-lg p-3 text-center border border-green-100">
-          <div className="text-lg font-bold text-green-700">
-            {allStudents.filter((s) => s.fee_status === "paid").length}
-          </div>
-          <div className="text-xs text-green-500">Fees Paid</div>
-        </div>
-        <div className="bg-yellow-50 rounded-lg p-3 text-center border border-yellow-100">
-          <div className="text-lg font-bold text-yellow-700">
-            {allStudents.filter((s) => s.fee_status !== "paid").length}
-          </div>
-          <div className="text-xs text-yellow-600">Pending</div>
-        </div>
-      </div>
+
 
       {/* Filter */}
       <form
@@ -176,15 +156,12 @@ export default async function StudentsPage({ searchParams }) {
         <div className="space-y-5">
           {sortedFaculties.map((fac) => {
             const courses = Object.keys(grouped[fac]).sort();
-            const facTotal = courses.reduce(
-              (sum, course) =>
-                sum +
-                Object.values(grouped[fac][course]).reduce(
-                  (s, arr) => s + arr.length,
-                  0,
-                ),
-              0,
-            );
+            const facTotal = courses.reduce((sum, course) => {
+              const sems = Object.keys(grouped[fac][course]);
+              return sum + sems.reduce((s, sem) => {
+                return s + Object.values(grouped[fac][course][sem]).reduce((s2, arr) => s2 + arr.length, 0);
+              }, 0);
+            }, 0);
             return (
               <div
                 key={fac}
