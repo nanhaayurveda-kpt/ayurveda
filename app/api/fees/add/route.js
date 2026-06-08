@@ -7,84 +7,48 @@ import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import { setFlash } from "@/lib/flash";
 
-const FIXED_TYPES = [
-  "tuition",
-  "admission",
-  "practical",
-  "hostel",
-  "library",
-  "misc",
-];
+const FIXED_TYPES = ["tuition", "admission", "practical", "hostel", "library", "misc"];
 
 function slugify(s) {
-  return s
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
+  return s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
 }
 
 export async function POST(request) {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
 
-  if (!token)
-    return NextResponse.redirect(new URL("/login", request.url), {
-      status: 303,
-    });
+  if (!token) return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
   const session = await getSession(token);
-  if (!session)
-    return NextResponse.redirect(new URL("/login", request.url), {
-      status: 303,
-    });
+  if (!session) return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
 
-  const userResult = await db
-    .select()
-    .from(schema.users)
-    .where(eq(schema.users.email, session.email));
+  const userResult = await db.select().from(schema.users).where(eq(schema.users.email, session.email));
   const user = userResult[0];
-  if (!user)
-    return NextResponse.redirect(new URL("/login", request.url), {
-      status: 303,
-    });
+  if (!user) return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
 
   const formData = await request.formData();
   const studentId = parseInt(formData.get("student_id"), 10);
   const dueDate = formData.get("due_date");
   const paidDate = formData.get("paid_date") || null;
   const academicYear = formData.get("academic_year")?.trim() || null;
-  const concessionAmount = parseInt(
-    formData.get("concession_amount") || "0",
-    10,
-  );
+  const concessionAmount = parseInt(formData.get("concession_amount") || "0", 10);
   const amountPaidNowRaw = formData.get("amount_paid_now");
   const settlePrevious = formData.get("settle_previous_dues") === "on";
 
   if (!studentId || isNaN(studentId)) {
     await setFlash("error", "Student required");
-    return NextResponse.redirect(new URL("/fees/add", request.url), {
-      status: 303,
-    });
+    return NextResponse.redirect(new URL("/fees/add", request.url), { status: 303 });
   }
   if (!dueDate) {
     await setFlash("error", "Due date required");
-    return NextResponse.redirect(new URL("/fees/add", request.url), {
-      status: 303,
-    });
+    return NextResponse.redirect(new URL("/fees/add", request.url), { status: 303 });
   }
 
-  const studentRows = await db
-    .select()
-    .from(schema.students)
-    .where(
-      and(eq(schema.students.id, studentId), eq(schema.students.user_id, 1)),
-    );
+  const studentRows = await db.select().from(schema.students)
+    .where(and(eq(schema.students.id, studentId), eq(schema.students.user_id, 1)));
   const student = studentRows[0];
   if (!student) {
     await setFlash("error", "Student not found");
-    return NextResponse.redirect(new URL("/fees/add", request.url), {
-      status: 303,
-    });
+    return NextResponse.redirect(new URL("/fees/add", request.url), { status: 303 });
   }
 
   const selectedSemestersRaw = formData.get("selected_semesters");
@@ -101,16 +65,12 @@ export async function POST(request) {
     semesterCheckedMap = JSON.parse(semesterCheckedRaw || "{}");
   } catch {
     await setFlash("error", "Invalid form data");
-    return NextResponse.redirect(new URL("/fees/add", request.url), {
-      status: 303,
-    });
+    return NextResponse.redirect(new URL("/fees/add", request.url), { status: 303 });
   }
 
   if (selectedSemesters.length === 0) {
     await setFlash("error", "Select at least one semester");
-    return NextResponse.redirect(new URL("/fees/add", request.url), {
-      status: 303,
-    });
+    return NextResponse.redirect(new URL("/fees/add", request.url), { status: 303 });
   }
 
   const rowsToInsert = [];
@@ -118,7 +78,7 @@ export async function POST(request) {
   for (const sem of selectedSemesters) {
     const items = semesterItemsMap[sem] || {};
     for (const feeType of FIXED_TYPES) {
-      if (!semesterCheckedMap[sem]?.[feeType]) continue;
+      if (!semesterCheckedMap[feeType]) continue;
       const amt = parseInt(items[feeType] || "0", 10);
       if (isNaN(amt) || amt <= 0) continue;
       rowsToInsert.push({ feeType, amount: amt, semester: sem });
@@ -126,9 +86,7 @@ export async function POST(request) {
   }
 
   const customCount = parseInt(formData.get("custom_count"), 10) || 0;
-  const usedTypes = new Set(
-    rowsToInsert.map((r) => `${r.semester}_${r.feeType}`),
-  );
+  const usedTypes = new Set(rowsToInsert.map((r) => `${r.semester}_${r.feeType}`));
   for (let i = 0; i < customCount; i++) {
     const nameRaw = formData.get(`custom_name_${i}`)?.trim();
     const amtRaw = formData.get(`custom_amount_${i}`);
@@ -142,9 +100,7 @@ export async function POST(request) {
 
   if (rowsToInsert.length === 0) {
     await setFlash("error", "No valid fee items");
-    return NextResponse.redirect(new URL("/fees/add", request.url), {
-      status: 303,
-    });
+    return NextResponse.redirect(new URL("/fees/add", request.url), { status: 303 });
   }
 
   const now = new Date();
@@ -160,10 +116,7 @@ export async function POST(request) {
     if (!amountPaidNowRaw || amountPaidNowRaw === "") {
       paidNowTotal = netDue;
     } else {
-      paidNowTotal = Math.max(
-        0,
-        Math.min(netDue, parseInt(amountPaidNowRaw, 10) || 0),
-      );
+      paidNowTotal = Math.max(0, Math.min(netDue, parseInt(amountPaidNowRaw, 10) || 0));
     }
   }
 
@@ -178,18 +131,11 @@ export async function POST(request) {
       eq(schema.fees.student_id, studentId),
       eq(schema.fees.fee_type, row.feeType),
     ];
-    if (academicYear)
-      conditions.push(eq(schema.fees.academic_year, academicYear));
+    if (academicYear) conditions.push(eq(schema.fees.academic_year, academicYear));
     if (row.semester) conditions.push(eq(schema.fees.semester, row.semester));
 
-    const existing = await db
-      .select({ id: schema.fees.id })
-      .from(schema.fees)
-      .where(and(...conditions));
-    if (existing.length > 0) {
-      skipped++;
-      continue;
-    }
+    const existing = await db.select({ id: schema.fees.id }).from(schema.fees).where(and(...conditions));
+    if (existing.length > 0) { skipped++; continue; }
 
     const rowDiscount = firstRow ? concessionAmount : 0;
     const rowNet = row.amount - rowDiscount;
@@ -218,11 +164,8 @@ export async function POST(request) {
     firstRow = false;
 
     if (paidDate && rowPaid > 0) {
-      const findRows = await db
-        .select({ id: schema.fees.id })
-        .from(schema.fees)
-        .where(and(...conditions))
-        .orderBy(schema.fees.id);
+      const findRows = await db.select({ id: schema.fees.id }).from(schema.fees)
+        .where(and(...conditions)).orderBy(schema.fees.id);
       const feeRow = findRows[findRows.length - 1];
       if (feeRow) {
         await db.insert(schema.fee_payments).values({
@@ -239,36 +182,25 @@ export async function POST(request) {
     inserted++;
   }
 
-  // Settle previous dues
   let settledCount = 0;
   if (settlePrevious && paidDate) {
     const oldRows = await db
-      .select({
-        id: schema.fees.id,
-        amount: schema.fees.amount,
-        paid_amount: schema.fees.paid_amount,
-        receipt_no: schema.fees.receipt_no,
-      })
+      .select({ id: schema.fees.id, amount: schema.fees.amount, paid_amount: schema.fees.paid_amount, receipt_no: schema.fees.receipt_no })
       .from(schema.fees)
-      .where(
-        and(
-          eq(schema.fees.user_id, 1),
-          eq(schema.fees.student_id, studentId),
-          inArray(schema.fees.status, ["pending", "partial"]),
-        ),
-      );
+      .where(and(
+        eq(schema.fees.user_id, 1),
+        eq(schema.fees.student_id, studentId),
+        inArray(schema.fees.status, ["pending", "partial"]),
+      ));
     for (const oldRow of oldRows) {
       if (oldRow.receipt_no === receiptNo) continue;
       const remaining = (oldRow.amount || 0) - (oldRow.paid_amount || 0);
       if (remaining <= 0) continue;
-      await db
-        .update(schema.fees)
-        .set({
-          paid_amount: oldRow.amount,
-          status: "paid",
-          paid_date: new Date(paidDate),
-        })
-        .where(eq(schema.fees.id, oldRow.id));
+      await db.update(schema.fees).set({
+        paid_amount: oldRow.amount,
+        status: "paid",
+        paid_date: new Date(paidDate),
+      }).where(eq(schema.fees.id, oldRow.id));
       await db.insert(schema.fee_payments).values({
         fee_id: oldRow.id,
         student_id: studentId,
