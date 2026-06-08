@@ -91,8 +91,6 @@ export default async function StudentsPage({ searchParams }) {
         </div>
       </div>
 
-
-
       {/* Filter */}
       <form
         method="GET"
@@ -158,9 +156,18 @@ export default async function StudentsPage({ searchParams }) {
             const courses = Object.keys(grouped[fac]).sort();
             const facTotal = courses.reduce((sum, course) => {
               const sems = Object.keys(grouped[fac][course]);
-              return sum + sems.reduce((s, sem) => {
-                return s + Object.values(grouped[fac][course][sem]).reduce((s2, arr) => s2 + arr.length, 0);
-              }, 0);
+              return (
+                sum +
+                sems.reduce((s, sem) => {
+                  return (
+                    s +
+                    Object.values(grouped[fac][course][sem]).reduce(
+                      (s2, arr) => s2 + arr.length,
+                      0,
+                    )
+                  );
+                }, 0)
+              );
             }, 0);
             return (
               <div
@@ -176,7 +183,11 @@ export default async function StudentsPage({ searchParams }) {
                 {courses.map((course) => {
                   const semesters = Object.keys(grouped[fac][course]).sort();
                   const courseTotal = semesters.reduce(
-                    (sum, sem) => Object.values(grouped[fac][course][sem]).reduce((s2, arr) => s2 + arr.length, 0) + sum,
+                    (sum, sem) =>
+                      Object.values(grouped[fac][course][sem]).reduce(
+                        (s2, arr) => s2 + arr.length,
+                        0,
+                      ) + sum,
                     0,
                   );
                   return (
@@ -190,8 +201,14 @@ export default async function StudentsPage({ searchParams }) {
                         </span>
                       </div>
                       {semesters.map((sem) => {
-                        const sections = Object.keys(grouped[fac][course][sem]).sort();
-                        const semTotal = sections.reduce((s2, sec) => s2 + grouped[fac][course][sem][sec].length, 0);
+                        const sections = Object.keys(
+                          grouped[fac][course][sem],
+                        ).sort();
+                        const semTotal = sections.reduce(
+                          (s2, sec) =>
+                            s2 + grouped[fac][course][sem][sec].length,
+                          0,
+                        );
                         return (
                           <div key={sem} className="border-t border-gray-50">
                             <div className="bg-gray-50 px-4 py-1.5 flex justify-between items-center">
@@ -203,55 +220,59 @@ export default async function StudentsPage({ searchParams }) {
                               </span>
                             </div>
                             <div className="divide-y divide-gray-50">
-                              {sections.flatMap((sec) => { return grouped[fac][course][sem][sec].map((student, idx) => (
-                                <div
-                                  key={student.id}
-                                  className="px-4 py-2.5 flex justify-between items-center"
-                                >
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span className="text-xs text-gray-400 w-5 shrink-0">
-                                      {idx + 1}.
-                                    </span>
-                                    <div className="min-w-0">
-                                      <Link
-                                        href={`/students/${student.id}`}
-                                        className="text-sm font-medium text-gray-900 truncate hover:text-green-600"
-                                      >
-                                        {student.name}
-                                      </Link>
-                                      <p className="text-xs text-gray-400">
-                                        Roll {student.roll_number || "—"} ·{" "}
-                                        {student.phone || "—"}
-                                      </p>
+                              {sections.flatMap((sec) => {
+                                return grouped[fac][course][sem][sec].map(
+                                  (student, idx) => (
+                                    <div
+                                      key={student.id}
+                                      className="px-4 py-2.5 flex justify-between items-center"
+                                    >
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <span className="text-xs text-gray-400 w-5 shrink-0">
+                                          {idx + 1}.
+                                        </span>
+                                        <div className="min-w-0">
+                                          <Link
+                                            href={`/students/${student.id}`}
+                                            className="text-sm font-medium text-gray-900 truncate hover:text-green-600"
+                                          >
+                                            {student.name}
+                                          </Link>
+                                          <p className="text-xs text-gray-400">
+                                            Roll {student.roll_number || "—"} ·{" "}
+                                            {student.phone || "—"}
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2 ml-2 shrink-0 self-center">
+                                        <Link
+                                          href={`/students/${student.id}/edit`}
+                                          className="text-xs text-green-600 font-medium"
+                                        >
+                                          Edit
+                                        </Link>
+                                        <form
+                                          method="POST"
+                                          action="/api/students/delete"
+                                          className="inline"
+                                        >
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={student.id}
+                                          />
+                                          <button
+                                            type="submit"
+                                            className="text-xs text-red-500 font-medium"
+                                          >
+                                            Delete
+                                          </button>
+                                        </form>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="flex items-center gap-2 ml-2 shrink-0">
-                                    <Link
-                                      href={`/students/${student.id}/edit`}
-                                      className="text-xs text-green-600 font-medium"
-                                    >
-                                      Edit
-                                    </Link>
-                                    <form
-                                      method="POST"
-                                      action="/api/students/delete"
-                                      className="inline"
-                                    >
-                                      <input
-                                        type="hidden"
-                                        name="id"
-                                        value={student.id}
-                                      />
-                                      <button
-                                        type="submit"
-                                        className="text-xs text-red-500 font-medium"
-                                      >
-                                        Delete
-                                      </button>
-                                    </form>
-                                  </div>
-                                </div>
-                              )); })}
+                                  ),
+                                );
+                              })}
                             </div>
                           </div>
                         );
