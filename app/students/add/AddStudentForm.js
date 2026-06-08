@@ -10,8 +10,7 @@ export default function AddStudentForm({
 }) {
   const [photoUrl, setPhotoUrl] = useState("");
   const [photoPreview, setPhotoPreview] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [selectedFaculty, setSelectedFaculty] = useState("");
+  const [uploading, setUploading] = useState(false);  
   const [admissionNo, setAdmissionNo] = useState("");
   const [admissionStatus, setAdmissionStatus] = useState("idle");
   const [admissionConflict, setAdmissionConflict] = useState(null);
@@ -130,48 +129,11 @@ export default function AddStudentForm({
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
-
-          {/* Faculty */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Faculty <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="faculty"
-              required
-              defaultValue=""
-              onChange={(e) => setSelectedFaculty(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Select...</option>
-              {faculties.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-            </select>
-          </div>
+          <input type="hidden" name="faculty" value="Ayurveda" />
+          <input type="hidden" name="course" value="BAMS" />
 
           {/* Course + Professional Year */}
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Course <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="course"
-                required
-                defaultValue=""
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                <option value="">Select...</option>
-                {(selectedFaculty ? courses[selectedFaculty] : []).map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Professional Year <span className="text-red-500">*</span>
