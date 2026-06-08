@@ -3,15 +3,6 @@
 import { useState, useMemo } from "react";
 
 const FIXED_TYPES = [
-  { value: "tuition", label: "Tuition Fee" },
-  { value: "admission", label: "Admission Fee" },
-  { value: "practical", label: "Practical Fee" },
-  { value: "hostel", label: "Hostel Fee" },
-  { value: "library", label: "Library Fee" },
-  { value: "misc", label: "Miscellaneous" },
-];
-
-const FIXED_TYPES = [
   "tuition",
   "admission",
   "practical",
