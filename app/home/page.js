@@ -73,6 +73,24 @@ const TILES = [
     desc: "Class schedule",
   },
   { href: "/notices", icon: "📢", label: "Notices", desc: "Notice board" },
+  {
+    href: "/clinical-logbook",
+    icon: "🏥",
+    label: "Clinical Logbook",
+    desc: "NCISM e-Logbook",
+  },
+  {
+    href: "/internship",
+    icon: "🩺",
+    label: "Internship",
+    desc: "Rotatory postings",
+  },
+  {
+    href: "/reports/ncism",
+    icon: "📑",
+    label: "NCISM Report",
+    desc: "Inspection ready",
+  },
   { href: "/reports", icon: "📊", label: "Reports", desc: "NAAC & analytics" },
   {
     href: "/admissions",
