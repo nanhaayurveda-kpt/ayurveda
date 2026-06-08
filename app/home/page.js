@@ -24,6 +24,12 @@ const TILES = [
     desc: "Staff & PIN login",
   },
   {
+    href: "/student/login",
+    icon: "👨‍🎓",
+    label: "Student Login",
+    desc: "Student portal",
+  },
+  {
     href: "/professor-login",
     icon: "🔑",
     label: "Professor Login",
