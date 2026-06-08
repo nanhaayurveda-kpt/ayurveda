@@ -1,17 +1,18 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { COURSES, SEMESTERS } from "@/lib/courses";
+import { SEMESTERS } from "@/lib/courses";
 
 const FIXED_TYPES = [
-  { value: "semester", label: "Semester Fee" },
+  { value: "tuition", label: "Tuition Fee" },
   { value: "admission", label: "Admission Fee" },
   { value: "practical", label: "Practical Fee" },
+  { value: "hostel", label: "Hostel Fee" },
+  { value: "library", label: "Library Fee" },
   { value: "misc", label: "Miscellaneous" },
 ];
 
 export default function PackageForm({ currentAcademicYear }) {
-  const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
   const [selectedSection, setSelectedSection] = useState("");
   const [academicYear, setAcademicYear] = useState(currentAcademicYear);
@@ -67,24 +68,15 @@ export default function PackageForm({ currentAcademicYear }) {
       onSubmit={() => setSubmitting(true)}
       className="space-y-4"
     >
+      <input type="hidden" name="course" value="BAMS" />
+
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Course <span className="text-red-500">*</span>
-          </label>
-          <select name="course" required value={selectedCourse}
-            onChange={(e) => setSelectedCourse(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-            <option value="">Select...</option>
-            {COURSES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Professional Year</label>
           <select name="semester" value={selectedSemester}
             onChange={(e) => setSelectedSemester(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-            <option value="">All Semesters</option>
+            <option value="">All Years</option>
             {SEMESTERS.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
@@ -123,7 +115,7 @@ export default function PackageForm({ currentAcademicYear }) {
               <input type="checkbox" id={ft.value}
                 checked={!!checkedTypes[ft.value]}
                 onChange={() => handleCheck(ft.value)}
-                className="w-4 h-4 accent-indigo-600" />
+                className="w-4 h-4 accent-green-600" />
               <label htmlFor={ft.value}
                 className="flex-1 text-sm font-medium text-gray-700 cursor-pointer">
                 {ft.label}
@@ -146,7 +138,7 @@ export default function PackageForm({ currentAcademicYear }) {
       <div>
         <div className="flex justify-between items-center mb-2">
           <label className="block text-sm font-medium text-gray-700">
-            Custom Items <span className="text-gray-400 text-xs font-normal">(hostel, library, etc.)</span>
+            Custom Items <span className="text-gray-400 text-xs font-normal">(exam fee, uniform, etc.)</span>
           </label>
           <button type="button" onClick={addCustomItem}
             className="text-xs text-green-600 font-medium">
@@ -162,7 +154,7 @@ export default function PackageForm({ currentAcademicYear }) {
                 className="border border-amber-200 bg-amber-50 rounded-lg px-3 py-2 flex items-center gap-2">
                 <input type="text" name={`custom_name_${i}`}
                   value={it.name} onChange={(e) => updateCustom(i, "name", e.target.value)}
-                  placeholder="Item name (e.g. hostel)" required
+                  placeholder="Item name" required
                   className="flex-1 border border-amber-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
                 <input type="number" name={`custom_amount_${i}`}
                   value={it.amount} onChange={(e) => updateCustom(i, "amount", e.target.value)}
@@ -186,7 +178,7 @@ export default function PackageForm({ currentAcademicYear }) {
 
       <div className="flex gap-3 pt-2">
         <button type="submit"
-          disabled={submitting || itemCount === 0 || !selectedCourse || !academicYear}
+          disabled={submitting || itemCount === 0 || !academicYear}
           className="flex-1 bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
           {submitting ? "Saving..." : "Save Package"}
         </button>
