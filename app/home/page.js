@@ -5,21 +5,99 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 
 const TILES = [
-  { href: "/dashboard", icon: "📊", label: "Dashboard", desc: "Overview & stats" },
-  { href: "/students", icon: "🎓", label: "Students", desc: "Add, edit, manage" },
-  { href: "/professors", icon: "👨‍🏫", label: "Professors", desc: "Staff & PIN login" },
-  { href: "/professor-login", icon: "🔑", label: "Professor Login", desc: "PIN-based access" },
+  {
+    href: "/dashboard",
+    icon: "📊",
+    label: "Dashboard",
+    desc: "Overview & stats",
+  },
+  {
+    href: "/students",
+    icon: "🎓",
+    label: "Students",
+    desc: "Add, edit, manage",
+  },
+  {
+    href: "/professors",
+    icon: "👨‍🏫",
+    label: "Professors",
+    desc: "Staff & PIN login",
+  },
+  {
+    href: "/professor-login",
+    icon: "🔑",
+    label: "Professor Login",
+    desc: "PIN-based access",
+  },
   { href: "/fees", icon: "💰", label: "Fees", desc: "Fee collection" },
-  { href: "/fee-structure", icon: "🏷️", label: "Fee Structure", desc: "Class-wise fees" },
-  { href: "/attendance", icon: "✅", label: "Attendance", desc: "Daily attendance" },
-  { href: "/exams", icon: "📝", label: "Exams & Results", desc: "Schedule & marks" },
-  { href: "/exam-forms", icon: "📋", label: "Exam Forms", desc: "University forms" },
-  { href: "/marksheet", icon: "📄", label: "Marksheet", desc: "Print marksheets" },
-  { href: "/certificates", icon: "🏅", label: "Certificates", desc: "TC, Bonafide etc." },
-  { href: "/timetable", icon: "🗓️", label: "Timetable", desc: "Class schedule" },
+  {
+    href: "/fee-structure",
+    icon: "🏷️",
+    label: "Fee Structure",
+    desc: "Class-wise fees",
+  },
+  {
+    href: "/attendance",
+    icon: "✅",
+    label: "Attendance",
+    desc: "Daily attendance",
+  },
+  {
+    href: "/exams",
+    icon: "📝",
+    label: "Exams & Results",
+    desc: "Schedule & marks",
+  },
+  {
+    href: "/exam-forms",
+    icon: "📋",
+    label: "Exam Forms",
+    desc: "University forms",
+  },
+  {
+    href: "/marksheet",
+    icon: "📄",
+    label: "Marksheet",
+    desc: "Print marksheets",
+  },
+  {
+    href: "/certificates",
+    icon: "🏅",
+    label: "Certificates",
+    desc: "TC, Bonafide etc.",
+  },
+  {
+    href: "/timetable",
+    icon: "🗓️",
+    label: "Timetable",
+    desc: "Class schedule",
+  },
   { href: "/notices", icon: "📢", label: "Notices", desc: "Notice board" },
   { href: "/reports", icon: "📊", label: "Reports", desc: "NAAC & analytics" },
-  { href: "/admissions", icon: "📥", label: "Admissions", desc: "New applications" },
+  {
+    href: "/admissions",
+    icon: "📥",
+    label: "Admissions",
+    desc: "New applications",
+  },
+  {
+    href: "/clinical-logbook",
+    icon: "🏥",
+    label: "Clinical Logbook",
+    desc: "NCISM e-Logbook",
+  },
+  {
+    href: "/internship",
+    icon: "🩺",
+    label: "Internship",
+    desc: "Rotatory postings",
+  },
+  {
+    href: "/reports/ncism",
+    icon: "📑",
+    label: "NCISM Report",
+    desc: "Inspection ready",
+  },
   { href: "/settings", icon: "⚙️", label: "Settings", desc: "College profile" },
 ];
 
@@ -52,7 +130,9 @@ export default async function HomePage() {
               {tile.icon}
             </div>
             <div>
-              <p className="font-semibold text-sm text-green-900">{tile.label}</p>
+              <p className="font-semibold text-sm text-green-900">
+                {tile.label}
+              </p>
               <p className="text-xs text-gray-400">{tile.desc}</p>
             </div>
           </Link>

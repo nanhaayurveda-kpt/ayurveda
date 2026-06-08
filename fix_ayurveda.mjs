@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, readdirSync, statSync } from "fs";
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from "fs";
 import { join } from "path";
 
 const ROOT = process.cwd();
@@ -64,3 +64,11 @@ for (const file of files) {
 
 console.log(`\n${DRY ? "[DRY RUN]" : "[APPLIED]"} ${changedFiles} files changed`);
 if (DRY) console.log("Apply करने के लिए: node fix_ayurveda.mjs --apply");
+
+// .editorconfig
+const ecPath = join(ROOT, ".editorconfig");
+if (!existsSync(ecPath)) {
+  const content = `root = true\n\n[*]\ncharset = utf-8\nend_of_line = lf\nindent_style = space\nindent_size = 2\n`;
+  if (!DRY) writeFileSync(ecPath, content, "utf8");
+  console.log(`${DRY ? "[DRY]" : "[CREATED]"} .editorconfig`);
+}
