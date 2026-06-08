@@ -1,16 +1,26 @@
 export const dynamic = "force-dynamic";
+
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { db } from "@/lib/db";
+import {
+  students,
+  professors,
+  fees,
+  attendance,
+  professor_attendance,
+  exams,
+  notices,
+  college_settings,
+  exam_forms,
+  users,
+} from "@/lib/schema";
+import AttendanceSnapshot from "@/app/dashboard/AttendanceSnapshot";
+import { sql, eq, and } from "drizzle-orm";
 
 const TILES = [
-  {
-    href: "/dashboard",
-    icon: "📊",
-    label: "Dashboard",
-    desc: "Overview & stats",
-  },
   {
     href: "/students",
     icon: "🎓",
@@ -24,16 +34,16 @@ const TILES = [
     desc: "Staff & PIN login",
   },
   {
-    href: "/student/login",
-    icon: "👨‍🎓",
-    label: "Student Login",
-    desc: "Student portal",
-  },
-  {
     href: "/professor-login",
     icon: "🔑",
     label: "Professor Login",
     desc: "PIN-based access",
+  },
+  {
+    href: "/student/login",
+    icon: "👨‍🎓",
+    label: "Student Login",
+    desc: "Student portal",
   },
   { href: "/fees", icon: "💰", label: "Fees", desc: "Fee collection" },
   {
@@ -104,36 +114,190 @@ const TILES = [
     label: "Admissions",
     desc: "New applications",
   },
-  {
-    href: "/clinical-logbook",
-    icon: "🏥",
-    label: "Clinical Logbook",
-    desc: "NCISM e-Logbook",
-  },
-  {
-    href: "/internship",
-    icon: "🩺",
-    label: "Internship",
-    desc: "Rotatory postings",
-  },
-  {
-    href: "/reports/ncism",
-    icon: "📑",
-    label: "NCISM Report",
-    desc: "Inspection ready",
-  },
   { href: "/settings", icon: "⚙️", label: "Settings", desc: "College profile" },
 ];
 
 export default async function HomePage() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("session")?.value;
-  const session = token ? await getSession(token) : null;
+  const session = await getSession(cookieStore.get("session")?.value);
   if (!session) redirect("/login");
 
+  const today = new Date().toISOString().split("T")[0];
+
+  const [
+    [studentCount],
+    [professorCount],
+    [pendingFees],
+    [paidFees],
+    [examCount],
+    [noticeCount],
+    [pendingExamForms],
+    allStudents,
+    recentNotices,
+    upcomingExams,
+    settingsRows,
+  ] = await Promise.all([
+    db
+      .select({ count: sql`COUNT(*)` })
+      .from(students)
+      .where(eq(students.user_id, 1)),
+    db
+      .select({ count: sql`COUNT(*)` })
+      .from(professors)
+      .where(eq(professors.user_id, 1)),
+    db
+      .select({ total: sql`SUM(amount)`, count: sql`COUNT(*)` })
+      .from(fees)
+      .where(and(sql`status = 'pending'`, eq(fees.user_id, 1))),
+    db
+      .select({ total: sql`SUM(paid_amount)` })
+      .from(fees)
+      .where(eq(fees.user_id, 1)),
+    db
+      .select({ count: sql`COUNT(*)` })
+      .from(exams)
+      .where(eq(exams.user_id, 1)),
+    db
+      .select({ count: sql`COUNT(*)` })
+      .from(notices)
+      .where(eq(notices.user_id, 1)),
+    db
+      .select({ count: sql`COUNT(*)` })
+      .from(exam_forms)
+      .where(and(sql`form_status = 'pending'`, eq(exam_forms.user_id, 1))),
+    db
+      .select({ faculty: students.faculty })
+      .from(students)
+      .where(eq(students.user_id, 1)),
+    db
+      .select()
+      .from(notices)
+      .where(eq(notices.user_id, 1))
+      .orderBy(sql`created_at DESC`)
+      .limit(3),
+    db
+      .select()
+      .from(exams)
+      .where(and(sql`exam_date >= ${today}`, eq(exams.user_id, 1)))
+      .orderBy(sql`exam_date ASC`)
+      .limit(3),
+    db.select().from(college_settings).where(eq(college_settings.user_id, 1)),
+  ]);
+
+  const settings = settingsRows[0] || null;
+  const settingsIncomplete =
+    !settings?.college_name || !settings?.principal_name;
+
+  // Attendance today
+  const studAttRows = await db
+    .select({
+      name: students.name,
+      course: students.course,
+      semester: students.semester,
+      status: attendance.status,
+      student_id: attendance.student_id,
+    })
+    .from(attendance)
+    .leftJoin(students, eq(attendance.student_id, students.id))
+    .where(and(eq(attendance.user_id, 1), eq(attendance.date, today)));
+
+  const semMap = {};
+  const markedStudentIds = new Set();
+  studAttRows.forEach((r) => {
+    const key = (r.course || "—") + "||" + (r.semester || "—");
+    if (!semMap[key]) semMap[key] = { present: [], absent: [], na: [] };
+    if (r.status === "present") semMap[key].present.push(r.name);
+    else if (r.status === "absent") semMap[key].absent.push(r.name);
+    markedStudentIds.add(r.student_id);
+  });
+
+  const allStudentsForNA = await db
+    .select({
+      id: students.id,
+      name: students.name,
+      course: students.course,
+      semester: students.semester,
+    })
+    .from(students)
+    .where(eq(students.user_id, 1));
+  allStudentsForNA.forEach((s) => {
+    if (!markedStudentIds.has(s.id)) {
+      const key = (s.course || "—") + "||" + (s.semester || "—");
+      if (!semMap[key]) semMap[key] = { present: [], absent: [], na: [] };
+      semMap[key].na.push(s.name);
+    }
+  });
+
+  const semKeys = Object.keys(semMap).sort((a, b) => {
+    const [ac, as_] = a.split("||");
+    const [bc, bs] = b.split("||");
+    const cc = ac.localeCompare(bc);
+    if (cc !== 0) return cc;
+    return parseInt(as_) - parseInt(bs);
+  });
+
+  const profAttRows = await db
+    .select({
+      name: professors.name,
+      professor_id: professor_attendance.professor_id,
+      status: professor_attendance.status,
+    })
+    .from(professor_attendance)
+    .leftJoin(professors, eq(professor_attendance.professor_id, professors.id))
+    .where(
+      and(
+        eq(professor_attendance.user_id, 1),
+        eq(professor_attendance.date, today),
+      ),
+    );
+
+  const profPresentList = profAttRows
+    .filter((r) => r.status === "present")
+    .map((r) => r.name);
+  const profAbsentList = profAttRows
+    .filter((r) => r.status === "absent")
+    .map((r) => r.name || "Unknown");
+  const markedProfIds = new Set(profAttRows.map((r) => r.professor_id));
+  const allProfsForNA = await db
+    .select({ id: professors.id, name: professors.name })
+    .from(professors)
+    .where(eq(professors.user_id, 1));
+  const profNAList = allProfsForNA
+    .filter((p) => !markedProfIds.has(p.id))
+    .map((p) => p.name);
+
   return (
-    <div className="pt-4">
-      <div className="mb-6">
+    <div className="pt-2">
+      {/* College Header */}
+      {settings?.college_name && (
+        <div className="flex items-center gap-3 mb-5 bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-100">
+          {settings.logo_url && (
+            <img
+              src={settings.logo_url}
+              alt="Logo"
+              className="h-12 w-12 object-contain rounded"
+            />
+          )}
+          <div>
+            <p className="text-base font-bold text-gray-900">
+              {settings.college_name}
+            </p>
+            {settings.university_name && (
+              <p className="text-xs text-gray-400">
+                {settings.university_name}
+              </p>
+            )}
+            {settings.principal_name && (
+              <p className="text-xs text-gray-500">
+                Principal: {settings.principal_name}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Welcome */}
+      <div className="mb-5">
         <p className="text-gray-500 text-sm">Welcome back,</p>
         <h1 className="text-2xl font-bold text-gray-800">
           {session.name?.split(" ")[0] || "Admin"}
@@ -143,7 +307,90 @@ export default async function HomePage() {
         </span>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Settings incomplete alert */}
+      {settingsIncomplete && (
+        <Link
+          href="/settings"
+          className="block bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-5"
+        >
+          <p className="text-sm font-semibold text-amber-800">
+            ⚠️ College settings incomplete
+          </p>
+          <p className="text-xs text-amber-600 font-medium mt-0.5">
+            Go to Settings →
+          </p>
+        </Link>
+      )}
+
+      {/* Exam Forms Alert */}
+      {Number(pendingExamForms?.count) > 0 && (
+        <Link
+          href="/exam-forms"
+          className="block bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-5"
+        >
+          <p className="text-sm font-semibold text-red-800">
+            📋 {pendingExamForms.count} Exam Form
+            {Number(pendingExamForms.count) > 1 ? "s" : ""} Pending
+          </p>
+          <p className="text-xs text-red-600 font-medium mt-0.5">
+            Review Now →
+          </p>
+        </Link>
+      )}
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <div className="text-2xl mb-1">🎓</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {studentCount?.count || 0}
+          </div>
+          <div className="text-xs text-gray-500 mt-0.5">Total Students</div>
+        </div>
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <div className="text-2xl mb-1">👨‍🏫</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {professorCount?.count || 0}
+          </div>
+          <div className="text-xs text-gray-500 mt-0.5">Total Professors</div>
+        </div>
+        <Link
+          href="/fees/summary?status=pending"
+          className="bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+        >
+          <div className="text-2xl mb-1">⚠️</div>
+          <div className="text-2xl font-bold text-red-600">
+            ₹{pendingFees?.total || 0}
+          </div>
+          <div className="text-xs text-gray-500 mt-0.5">
+            Pending Fees ({pendingFees?.count || 0})
+          </div>
+          <div className="text-xs text-green-500 mt-1">Student-wise →</div>
+        </Link>
+        <Link
+          href="/fees/summary?status=paid"
+          className="bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+        >
+          <div className="text-2xl mb-1">✅</div>
+          <div className="text-2xl font-bold text-green-600">
+            ₹{paidFees?.total || 0}
+          </div>
+          <div className="text-xs text-gray-500 mt-0.5">Fees Collected</div>
+          <div className="text-xs text-green-500 mt-1">Student-wise →</div>
+        </Link>
+      </div>
+
+      {/* Attendance Snapshot */}
+      <AttendanceSnapshot
+        semMap={semMap}
+        semKeys={semKeys}
+        profPresentList={profPresentList}
+        profAbsentList={profAbsentList}
+        profNAList={profNAList}
+      />
+
+      {/* Tiles */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
         {TILES.map((tile) => (
           <Link
             key={tile.href}
