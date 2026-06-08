@@ -146,9 +146,9 @@ export default async function HomePage() {
       .from(professors)
       .where(eq(professors.user_id, 1)),
     db
-      .select({ total: sql`SUM(amount)`, count: sql`COUNT(*)` })
+      .select({ total: sql`SUM(amount - paid_amount)`, count: sql`COUNT(*)` })
       .from(fees)
-      .where(and(sql`status = 'pending'`, eq(fees.user_id, 1))),
+      .where(and(sql`status IN ('pending', 'partial')`, eq(fees.user_id, 1))),
     db
       .select({ total: sql`SUM(paid_amount)` })
       .from(fees)
