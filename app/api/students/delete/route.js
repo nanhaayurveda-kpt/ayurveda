@@ -36,13 +36,13 @@ export async function POST(request) {
   const studentCheck = await db
     .select()
     .from(schema.students)
-    .where(
-      and(eq(schema.students.id, id), eq(schema.students.user_id, 1)),
-    );
+    .where(and(eq(schema.students.id, id), eq(schema.students.user_id, 1)));
   if (!studentCheck.length) {
     return NextResponse.redirect(new URL("/students", request.url), { status: 303 });
   }
 
+  await db.delete(schema.clinical_logs).where(eq(schema.clinical_logs.student_id, id));
+  await db.delete(schema.internship_postings).where(eq(schema.internship_postings.student_id, id));
   await db.delete(schema.fees).where(eq(schema.fees.student_id, id));
   await db.delete(schema.fee_payments).where(eq(schema.fee_payments.student_id, id));
   await db.delete(schema.attendance).where(eq(schema.attendance.student_id, id));
