@@ -79,7 +79,7 @@ export default async function ProfessorStudentsPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-900">{s.name}</p>
                   <p className="text-xs text-gray-400">
-                    {s.course} {s.semester ? `· Sem ${s.semester}` : ""} · Roll{" "}
+                    {s.course} {s.semester ? `· ${s.semester}` : ""} · Roll{" "}
                     {s.roll_number || "—"}
                   </p>
                 </div>

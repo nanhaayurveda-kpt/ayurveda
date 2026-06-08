@@ -75,7 +75,7 @@ export default async function PayFeePage({ params }) {
             <span className="text-gray-500">Course</span>
             <span className="font-medium text-gray-900">
               {fee.student_course}{" "}
-              {fee.student_semester ? `Sem ${fee.student_semester}` : ""}
+              {fee.student_semester ? `${fee.student_semester}` : ""}
             </span>
           </div>
           <div className="flex justify-between text-sm">

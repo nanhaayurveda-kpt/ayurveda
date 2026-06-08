@@ -57,7 +57,7 @@ export default async function EditCertificatePage({ params }) {
         <div>
           <h1 className="text-xl font-bold text-gray-900">Edit Certificate</h1>
           <p className="text-gray-500 text-xs mt-0.5">
-            {CERT_LABELS[cert.cert_type] || cert.cert_type} — {cert.student_name} ({cert.student_course} {cert.student_semester ? `Sem ${cert.student_semester}` : ""})
+            {CERT_LABELS[cert.cert_type] || cert.cert_type} — {cert.student_name} ({cert.student_course} {cert.student_semester ? `${cert.student_semester}` : ""})
           </p>
         </div>
         <a href="/certificates" className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">

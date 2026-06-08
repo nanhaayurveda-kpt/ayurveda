@@ -97,13 +97,13 @@ export default async function AddExamPage() {
             <select
               name="exam_type"
               required
-              defaultValue="internal"
+              defaultValue="theory"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="internal">Internal</option>
-              <option value="midterm">Mid Term</option>
+              <option value="viva">Viva</option>
               <option value="practical">Practical</option>
-              <option value="annual">Annual</option>
+              <option value="practical">Practical</option>
             </select>
           </div>
 

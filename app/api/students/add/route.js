@@ -158,7 +158,7 @@ export async function POST(request) {
     if (existingScholar.length > 0) {
       await setFlash(
         "error",
-        `Scholar No. ${data.scholar_no} already exists (${existingScholar[0].name} — ${existingScholar[0].course})`,
+        `University Reg. No. ${data.scholar_no} already exists (${existingScholar[0].name} — ${existingScholar[0].course})`,
       );
       return NextResponse.redirect(new URL("/students/add", request.url), {
         status: 303,

@@ -156,7 +156,7 @@ import { redirect } from "next/navigation";export default async function ExamFo
                     )}
                   </div>
                   <p className="text-xs text-gray-500">
-                    {form.course} · Sem {form.semester} · {form.academic_year}
+                    {form.course} · {form.semester} · {form.academic_year}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">
                     Roll: {form.roll_number || "—"} · Submitted:{" "}

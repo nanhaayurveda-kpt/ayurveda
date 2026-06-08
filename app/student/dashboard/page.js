@@ -91,7 +91,7 @@ export default async function StudentDashboardPage() {
             <div>
               <span className="text-gray-500">Course:</span>{" "}
               <span className="font-medium">
-                {student.course} — Sem {student.semester}
+                {student.course} — {student.semester}
               </span>
             </div>
             <div>

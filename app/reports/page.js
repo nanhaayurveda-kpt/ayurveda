@@ -167,7 +167,7 @@ export default async function ReportsPage() {
                     <p className="text-xs text-gray-400">{row.exam_date}</p>
                   </div>
                   <p className="text-xs text-gray-500 mb-1.5">
-                    {row.course} {row.semester ? `Sem ${row.semester}` : ""} · {row.subject}
+                    {row.course} {row.semester ? `${row.semester}` : ""} · {row.subject}
                   </p>
                   <div className="flex flex-wrap gap-3 text-xs">
                     <span className="text-gray-600">Appeared: {row.total_appeared || 0}</span>

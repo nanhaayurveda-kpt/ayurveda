@@ -167,7 +167,7 @@ export default async function FeeReceiptPage({ params }) {
                 <span className="text-gray-500">Course:</span>
                 <span className="font-semibold text-gray-900 ml-2">
                   {fee.student_course}{" "}
-                  {fee.student_semester ? `Sem ${fee.student_semester}` : ""}
+                  {fee.student_semester ? `${fee.student_semester}` : ""}
                 </span>
               </div>
               <div>

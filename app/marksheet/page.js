@@ -25,10 +25,10 @@ export default async function MarksheetPage({ searchParams }) {
   const years = [...new Set(allExams.map((e) => e.academic_year).filter(Boolean))].sort().reverse();
 
   const examTypes = [
-    { val: "internal", label: "Internal" },
-    { val: "midterm", label: "Mid Term" },
+    { val: "theory", label: "Theory" },
+    { val: "viva", label: "Viva" },
     { val: "practical", label: "Practical" },
-    { val: "annual", label: "Annual" },
+    { val: "practical", label: "Practical" },
   ];
 
   return (
@@ -93,7 +93,7 @@ export default async function MarksheetPage({ searchParams }) {
           <p className="text-xs font-medium text-gray-500 mb-2">Quick Access</p>
           <div className="grid grid-cols-2 gap-2">
             {courses.map((c) => (
-              <a key={c} href={`/marksheet/view?course=${c}&type=annual`}
+              <a key={c} href={`/marksheet/view?course=${c}&type=theory`}
                 className="bg-white border border-gray-100 rounded-xl p-3 shadow-sm text-center">
                 <p className="text-sm font-bold text-green-700">{c}</p>
                 <p className="text-xs text-gray-400 mt-0.5">Annual Marksheet</p>

@@ -233,7 +233,7 @@ export default async function AttendancePage({ searchParams }) {
               const phone = s.phone.replace(/\D/g, "");
               const fullPhone = phone.startsWith("91") ? phone : `91${phone}`;
               const msg = encodeURIComponent(
-                `Dear ${s.father_name || "Parent"},\n\n${s.name} (${s.course} Sem ${s.semester || "—"}) is absent today (${selectedDate}). Please inform the college.\n\n— College Management`,
+                `Dear ${s.father_name || "Parent"},\n\n${s.name} (${s.course} ${s.semester || "—"}) is absent today (${selectedDate}). Please inform the college.\n\n— College Management`,
               );
               return (
                 <div
@@ -288,7 +288,7 @@ export default async function AttendancePage({ searchParams }) {
                   </span>
                   {sec !== "—" && (
                     <span className="bg-green-600 text-white text-xs px-2 py-0.5 rounded-full">
-                      Sem {sec}
+                      {sec}
                     </span>
                   )}
                   <span className="text-xs text-gray-500">

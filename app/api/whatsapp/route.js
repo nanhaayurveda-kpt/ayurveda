@@ -49,7 +49,7 @@ export async function GET(request) {
       const phone = s.phone.replace(/\D/g, "");
       const fullPhone = phone.startsWith("91") ? phone : `91${phone}`;
       const message = encodeURIComponent(
-        `प्रिय ${s.father_name || "अभिभावक"},\n\nआपके बच्चे ${s.name} (${s.course}${s.semester ? " Sem " + s.semester : ""}) आज ${date} को उपस्थित नहीं हैं।\n\nकृपया सूचित करें।`
+        `प्रिय ${s.father_name || "अभिभावक"},\n\nआपके बच्चे ${s.name} (${s.course}${s.semester ? " " + s.semester : ""}) आज ${date} को उपस्थित नहीं हैं।\n\nकृपया सूचित करें।`
       );
       return {
         student_name: s.name,

@@ -79,7 +79,7 @@ export default async function ReportCardPage({ params }) {
           <h1 className="text-xl font-bold text-gray-900">Report Card</h1>
           <p className="text-gray-500 text-xs mt-0.5">
             {exam.name} — {exam.course}{" "}
-            {exam.semester ? `Sem ${exam.semester}` : ""}
+            {exam.semester ? `${exam.semester}` : ""}
           </p>
         </div>
         <div className="flex gap-3">

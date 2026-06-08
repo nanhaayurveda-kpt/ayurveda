@@ -67,7 +67,7 @@ export async function POST(request) {
       ),
     );
     if (scholarConflict.length > 0) {
-      await setFlash("error", `Scholar No. ${newScholarNo} already exists (${scholarConflict[0].name} — ${scholarConflict[0].course})`);
+      await setFlash("error", `University Reg. No. ${newScholarNo} already exists (${scholarConflict[0].name} — ${scholarConflict[0].course})`);
       return NextResponse.redirect(new URL(`/students/${id}/edit`, request.url), { status: 303 });
     }
   }

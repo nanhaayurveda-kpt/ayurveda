@@ -196,7 +196,7 @@ export default async function CertificatesPage({ searchParams }) {
                 </div>
                 <p className="text-xs text-gray-500">
                   {cert.student_course || "—"}{" "}
-                  {cert.student_semester ? `Sem ${cert.student_semester}` : ""}
+                  {cert.student_semester ? `${cert.student_semester}` : ""}
                   {cert.roll_number ? ` · Roll ${cert.roll_number}` : ""}
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5">

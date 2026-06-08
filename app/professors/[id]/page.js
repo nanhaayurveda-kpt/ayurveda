@@ -153,7 +153,7 @@ export default async function ProfessorDetailPage({ params }) {
                 key={s.id}
                 className="flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-xs font-medium"
               >
-                {s.subject} — {s.course} {s.semester ? `Sem ${s.semester}` : ""}
+                {s.subject} — {s.course} {s.semester ? `${s.semester}` : ""}
                 <form
                   method="POST"
                   action="/api/professors/delete-subject"
@@ -224,7 +224,7 @@ export default async function ProfessorDetailPage({ params }) {
                 <option value="">All</option>
                 {semesters.map((s) => (
                   <option key={s} value={s}>
-                    Sem {s}
+                    {s}
                   </option>
                 ))}
               </select>

@@ -71,7 +71,7 @@ export default async function FeesSummaryPage({ searchParams }) {
   // Semester-wise grand total
   const semTotals = {};
   filtered.forEach((f) => {
-    const key = (f.course || "—") + " Sem " + (f.semester || "—");
+    const key = (f.course || "—") + " " + (f.semester || "—");
     if (!semTotals[key]) semTotals[key] = { total: 0, paid: 0, balance: 0 };
     semTotals[key].total += f.amount || 0;
     semTotals[key].paid += f.paid_amount || 0;
@@ -203,7 +203,7 @@ export default async function FeesSummaryPage({ searchParams }) {
                         <div key={sem}>
                           <div className="bg-gray-50 px-4 py-1.5 border-t border-gray-100">
                             <span className="text-gray-500 font-medium text-xs">
-                              Sem {sem}
+                              {sem}
                             </span>
                           </div>
                           <div className="divide-y divide-gray-50">

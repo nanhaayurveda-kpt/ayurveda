@@ -37,7 +37,7 @@ export default function AddPeriodForm({
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
             <option value="">All</option>
             {semesters.map((s) => (
-              <option key={s} value={s}>Sem {s}</option>
+              <option key={s} value={s}>{s}</option>
             ))}
           </select>
         </div>

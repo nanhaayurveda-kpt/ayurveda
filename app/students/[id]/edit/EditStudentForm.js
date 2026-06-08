@@ -101,7 +101,7 @@ export default function EditStudentForm({ s, faculties, courses, semesters }) {
               <input type="text" name="roll_number" required defaultValue={s.roll_number || ""} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Scholar No.</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">University Reg. No.</label>
               <input type="text" name="scholar_no" defaultValue={s.scholar_no || ""} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
             </div>
           </div>

@@ -97,7 +97,7 @@ import { redirect } from "next/navigation";export default async function IssueC
               <option value="">Select student...</option>
               {allStudents.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name} — {s.course} {s.semester ? `Sem ${s.semester}` : ""}
+                  {s.name} — {s.course} {s.semester ? `${s.semester}` : ""}
                   {s.roll_number ? ` · Roll ${s.roll_number}` : ""}
                 </option>
               ))}

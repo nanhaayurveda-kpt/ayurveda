@@ -77,7 +77,7 @@ export default async function StudentDetailPage({ params }) {
         <div>
           <p className="text-base font-bold text-gray-900">{s.name}</p>
           <p className="text-xs text-gray-500">
-            {s.course} — Sem {s.semester}
+            {s.course} — {s.semester}
           </p>
           <p className="text-xs text-gray-400">{s.faculty}</p>
         </div>
@@ -96,7 +96,7 @@ export default async function StudentDetailPage({ params }) {
           </div>
           <div>
             <p className="text-xs text-gray-400 uppercase font-medium mb-0.5">
-              Scholar No.
+              University Reg. No.
             </p>
             <p className="text-sm font-medium text-gray-900">
               {s.scholar_no || "—"}

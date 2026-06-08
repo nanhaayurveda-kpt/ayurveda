@@ -219,7 +219,7 @@ export default async function StudentsPage({ searchParams }) {
                           <div key={sem} className="border-t border-gray-50">
                             <div className="bg-gray-50 px-4 py-1.5 flex justify-between items-center">
                               <span className="text-gray-500 font-medium text-xs">
-                                Sem {sem}
+                                {sem}
                               </span>
                               <span className="text-gray-400 text-xs">
                                 {semTotal} students

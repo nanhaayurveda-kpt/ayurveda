@@ -48,7 +48,7 @@ export default async function MarksEntryPage({ params }) {
         <h1 className="text-xl font-bold text-gray-900">Marks Entry</h1>
         <p className="text-gray-500 text-xs mt-0.5">
           {exam.name} — {exam.course}{" "}
-          {exam.semester ? `Sem ${exam.semester}` : ""} — {exam.subject} — Max:{" "}
+          {exam.semester ? `${exam.semester}` : ""} — {exam.subject} — Max:{" "}
           {exam.max_marks} | Pass: {exam.passing_marks}
         </p>
       </div>

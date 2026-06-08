@@ -255,7 +255,7 @@ export default function AddStudentForm({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Scholar No.
+                University Reg. No.
               </label>
               <input
                 type="text"

@@ -194,7 +194,7 @@ export default async function ExamsPage({ searchParams }) {
                     </div>
                     <p className="text-xs text-gray-500">
                       {exam.course}{" "}
-                      {exam.semester ? `Sem ${exam.semester}` : ""} ·{" "}
+                      {exam.semester ? `${exam.semester}` : ""} ·{" "}
                       {exam.subject}
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5">

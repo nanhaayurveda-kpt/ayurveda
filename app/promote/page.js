@@ -62,7 +62,7 @@ export default async function PromotePage() {
               key={sem}
               className="bg-green-50 border border-green-100 rounded-lg p-2 text-center"
             >
-              <p className="text-sm font-bold text-green-700">Sem {sem}</p>
+              <p className="text-sm font-bold text-green-700">{sem}</p>
               <p className="text-xs text-green-500">
                 {semCounts[sem] || 0} students
               </p>

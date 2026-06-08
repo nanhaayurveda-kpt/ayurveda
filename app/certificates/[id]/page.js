@@ -161,7 +161,7 @@ export default async function CertificatePrintPage({ params }) {
               <p>
                 He/She was enrolled in <strong>{cert.student_course}</strong>
                 {cert.student_semester
-                  ? `, Semester ${cert.student_semester}`
+                  ? `, ${cert.student_semester}`
                   : ""}
                 .
               </p>
@@ -196,7 +196,7 @@ export default async function CertificatePrintPage({ params }) {
                 <strong>{cert.father_name || "—"}</strong>, is/was a student of{" "}
                 <strong>{cert.student_course}</strong>
                 {cert.student_semester
-                  ? ` Semester ${cert.student_semester}`
+                  ? ` ${cert.student_semester}`
                   : ""}{" "}
                 at this college.
               </p>
@@ -223,7 +223,7 @@ export default async function CertificatePrintPage({ params }) {
                 He/She is currently enrolled in{" "}
                 <strong>{cert.student_course}</strong>
                 {cert.student_semester
-                  ? `, Semester ${cert.student_semester}`
+                  ? `, ${cert.student_semester}`
                   : ""}
                 {cert.student_faculty
                   ? `, Faculty of ${cert.student_faculty}`
@@ -259,7 +259,7 @@ export default async function CertificatePrintPage({ params }) {
                 <strong>{cert.father_name || "—"}</strong>, was a student of{" "}
                 <strong>{cert.student_course}</strong>
                 {cert.student_semester
-                  ? ` Semester ${cert.student_semester}`
+                  ? ` ${cert.student_semester}`
                   : ""}{" "}
                 at this college.
               </p>
@@ -307,7 +307,7 @@ export default async function CertificatePrintPage({ params }) {
                 <td className="px-4 py-2 text-gray-500">Course</td>
                 <td className="px-4 py-2 font-medium text-gray-900">
                   {cert.student_course}{" "}
-                  {cert.student_semester ? `Sem ${cert.student_semester}` : ""}
+                  {cert.student_semester ? `${cert.student_semester}` : ""}
                 </td>
               </tr>
               <tr className="bg-gray-50">
@@ -317,7 +317,7 @@ export default async function CertificatePrintPage({ params }) {
                 </td>
               </tr>
               <tr>
-                <td className="px-4 py-2 text-gray-500">Scholar No.</td>
+                <td className="px-4 py-2 text-gray-500">University Reg. No.</td>
                 <td className="px-4 py-2 font-medium text-gray-900">
                   {cert.admission_no || "—"}
                 </td>
@@ -352,7 +352,7 @@ export default async function CertificatePrintPage({ params }) {
         <div className="flex justify-between items-end mt-10">
           <div className="text-xs text-gray-400">
             <p>Date of Issue: {issueDate}</p>
-            <p className="mt-6">Ayurveda College Software</p>
+            <p className="mt-6">Ayurveda College ERP</p>
           </div>
           <div className="text-center text-xs text-gray-500">
             <div className="border-t border-gray-400 w-40 mb-1" />
