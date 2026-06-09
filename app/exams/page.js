@@ -156,13 +156,13 @@ export default async function ExamsPage({ searchParams }) {
                       📅 {exam.exam_date} · Max: {exam.max_marks} · Pass:{" "}
                       {exam.passing_marks}
                       {exam.academic_year ? ` · ${exam.academic_year}` : ""}
-                      <p
-                        className={`text-xs mt-0.5 ${hasResults ? "text-green-600" : "text-yellow-600"}`}
+                      <span
+                        className={`block text-xs mt-0.5 ${hasResults ? "text-green-600" : "text-yellow-600"}`}
                       >
                         {hasResults
                           ? `✓ ${exam.result_count} marks entered`
                           : "⏳ Marks pending"}
-                      </p>
+                      </span>
                     </p>
                   </div>
                   <div className="ml-3 shrink-0 flex flex-col gap-1.5 items-end">
