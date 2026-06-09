@@ -169,14 +169,16 @@ export default async function ExamsPage({ searchParams }) {
                       className="text-xs font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-lg"
                       title="Enter student marks"
                     >
-                      ✏️ Marks
+                      ✏️ Marks{" "}
+                      <span className="font-normal opacity-60">· enter</span>
                     </Link>
                     <Link
                       href={`/exams/${exam.id}/report`}
                       className="text-xs font-medium text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg"
                       title="View and print exam result report"
                     >
-                      📊 Report
+                      📊 Report{" "}
+                      <span className="font-normal opacity-60">· print</span>
                     </Link>
                     <DeleteExam examId={exam.id} examName={exam.name} />
                   </div>
