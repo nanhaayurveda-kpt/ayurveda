@@ -121,6 +121,7 @@ const TILES = [
     desc: "New applications",
   },
   { href: "/settings", icon: "⚙️", label: "Settings", desc: "College profile" },
+  { href: "/help", icon: "❓", label: "Help", desc: "उपयोग की जानकारी" },
 ];
 
 export default async function HomePage() {
