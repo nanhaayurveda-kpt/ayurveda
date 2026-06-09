@@ -54,9 +54,15 @@ const TILES = [
   },
   {
     href: "/attendance",
-    icon: "✅",
-    label: "Attendance",
-    desc: "Daily attendance",
+    icon: "👨‍🎓",
+    label: "Student Attendance",
+    desc: "Daily student attendance",
+  },
+  {
+    href: "/professor-attendance",
+    icon: "👨‍🏫",
+    label: "Professor Attendance",
+    desc: "Daily professor attendance",
   },
   {
     href: "/exams",
