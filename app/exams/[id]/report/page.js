@@ -39,9 +39,7 @@ export default async function ReportCardPage({ params }) {
   const courseStudents = await db
     .select()
     .from(students)
-    .where(
-      and(eq(students.course, exam.course), eq(students.user_id, 1)),
-    );
+    .where(and(eq(students.course, exam.course), eq(students.user_id, 1)));
 
   const examResults = await db
     .select()
@@ -272,7 +270,18 @@ export default async function ReportCardPage({ params }) {
         <div className="mt-8 pt-6 border-t border-gray-200 flex justify-between text-xs text-gray-400">
           <span>Ayurveda College Software</span>
           <span>{new Date().toLocaleDateString("en-IN")}</span>
-          <span>Professor Signature: _______________</span>
+          <div className="text-center">
+            {settings.signature_url ? (
+              <img
+                src={settings.signature_url}
+                alt="Signature"
+                className="h-10 mx-auto mb-1"
+              />
+            ) : (
+              <div className="border-b border-gray-400 w-40 mx-auto mb-1" />
+            )}
+            <span>Principal Signature</span>
+          </div>
         </div>
       </div>
     </div>
