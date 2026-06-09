@@ -69,7 +69,8 @@ export default async function ExamsPage({ searchParams }) {
         <div>
           <h1 className="text-xl font-bold text-gray-900">Exams & Results</h1>
           <p className="text-gray-500 text-xs mt-0.5">
-            {allExams.length} total · {upcoming.length} upcoming · {past.length} past
+            {allExams.length} total · {upcoming.length} upcoming · {past.length}{" "}
+            past
           </p>
         </div>
         <Link
@@ -135,19 +136,25 @@ export default async function ExamsPage({ searchParams }) {
                         {exam.name}
                       </p>
                       {exam.exam_type && (
-                        <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${TYPE_COLORS[exam.exam_type] || "bg-gray-100 text-gray-600"}`}>
+                        <span
+                          className={`px-2 py-0.5 text-xs rounded-full font-medium ${TYPE_COLORS[exam.exam_type] || "bg-gray-100 text-gray-600"}`}
+                        >
                           {TYPE_LABELS[exam.exam_type] || exam.exam_type}
                         </span>
                       )}
-                      <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${isUpcoming ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                      <span
+                        className={`px-2 py-0.5 text-xs rounded-full font-medium ${isUpcoming ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
+                      >
                         {isUpcoming ? "Upcoming" : "Completed"}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500">
-                      {exam.course} {exam.semester ? `${exam.semester}` : ""} · {exam.subject}
+                      {exam.course} {exam.semester ? `${exam.semester}` : ""} ·{" "}
+                      {exam.subject}
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      📅 {exam.exam_date} · Max: {exam.max_marks} · Pass: {exam.passing_marks}
+                      📅 {exam.exam_date} · Max: {exam.max_marks} · Pass:{" "}
+                      {exam.passing_marks}
                       {exam.academic_year ? ` · ${exam.academic_year}` : ""}
                     </p>
                     {hasResults && (
@@ -160,12 +167,14 @@ export default async function ExamsPage({ searchParams }) {
                     <Link
                       href={`/exams/${exam.id}/results`}
                       className="text-xs font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-lg"
+                      title="Enter student marks"
                     >
                       ✏️ Marks
                     </Link>
                     <Link
                       href={`/exams/${exam.id}/report`}
                       className="text-xs font-medium text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg"
+                      title="View and print exam result report"
                     >
                       📊 Report
                     </Link>
