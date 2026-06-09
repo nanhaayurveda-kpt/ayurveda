@@ -7,6 +7,7 @@ import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { users } from "@/lib/schema";
 import { eq } from "drizzle-orm";
+import { SEMESTERS } from "@/lib/courses";
 
 export default async function MarksheetPage({ searchParams }) {
   const cookieStore = await cookies();
@@ -18,6 +19,7 @@ export default async function MarksheetPage({ searchParams }) {
   const params = await searchParams;
   const selectedType = params?.type || "";
   const selectedYear = params?.year || "";
+  const selectedSemester = params?.semester || "";
 
   const allExams = await db.select().from(exams).where(eq(exams.user_id, 1));
   const years = [...new Set(allExams.map((e) => e.academic_year).filter(Boolean))].sort().reverse();
@@ -39,6 +41,19 @@ export default async function MarksheetPage({ searchParams }) {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4">
         <form method="GET" action="/marksheet/view" className="space-y-3">
           <input type="hidden" name="course" value="BAMS" />
+
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Professional Year <span className="text-red-500">*</span>
+            </label>
+            <select name="semester" defaultValue={selectedSemester} required
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option value="">Select Year...</option>
+              {SEMESTERS.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
 
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -80,11 +95,11 @@ export default async function MarksheetPage({ searchParams }) {
       <div>
         <p className="text-xs font-medium text-gray-500 mb-2">Quick Access</p>
         <div className="grid grid-cols-2 gap-2">
-          {examTypes.map(({ val, label }) => (
-            <a key={val} href={`/marksheet/view?course=BAMS&type=${val}`}
+          {SEMESTERS.map((s) => (
+            <a key={s} href={`/marksheet/view?course=BAMS&type=theory&semester=${encodeURIComponent(s)}`}
               className="bg-white border border-gray-100 rounded-xl p-3 shadow-sm text-center">
-              <p className="text-sm font-bold text-green-700">BAMS</p>
-              <p className="text-xs text-gray-400 mt-0.5">{label} Marksheet</p>
+              <p className="text-sm font-bold text-green-700">{s}</p>
+              <p className="text-xs text-gray-400 mt-0.5">Theory Marksheet</p>
             </a>
           ))}
         </div>
