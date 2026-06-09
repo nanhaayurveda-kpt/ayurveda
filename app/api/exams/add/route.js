@@ -78,7 +78,6 @@ export async function POST(request) {
   const conditions = [
     eq(schema.exams.user_id, 1),
     eq(schema.exams.name, name),
-    eq(schema.exams.faculty, faculty),
     eq(schema.exams.course, course),
     eq(schema.exams.subject, subject),
     eq(schema.exams.exam_date, exam_date),
@@ -99,8 +98,7 @@ export async function POST(request) {
 
   // ─── Insert ────────────────────────────────────────────────────────────
   await db.insert(schema.exams).values({
-    name,
-    faculty,
+    name,   
     course,
     semester: professionalYear,
     subject,
