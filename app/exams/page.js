@@ -21,7 +21,6 @@ export default async function ExamsPage({ searchParams }) {
   const user = userResult[0];
 
   const params = await searchParams;
-  const filterCourse = params?.course || "";
   const filterType = params?.type || "";
 
   const allExams = await db
@@ -42,21 +41,8 @@ export default async function ExamsPage({ searchParams }) {
     .where(eq(exams.user_id, 1))
     .orderBy(sql`${exams.exam_date} DESC`);
 
-  const courses = [
-    "B.A.",
-    "M.A.",
-    "B.Com",
-    "M.Com",
-    "B.Sc.",
-    "M.Sc.",
-    "B.Sc. Ag.",
-    "M.Sc. Ag.",
-  ];
-
   const filtered = allExams.filter((e) => {
-    const matchCourse = !filterCourse || e.course === filterCourse;
-    const matchType = !filterType || e.exam_type === filterType;
-    return matchCourse && matchType;
+    return !filterType || e.exam_type === filterType;
   });
 
   const today = new Date().toISOString().split("T")[0];
@@ -64,17 +50,17 @@ export default async function ExamsPage({ searchParams }) {
   const past = allExams.filter((e) => e.exam_date < today);
 
   const TYPE_LABELS = {
+    theory: "Theory",
     internal: "Internal",
-    midterm: "Mid Term",
     practical: "Practical",
-    annual: "Annual",
+    viva: "Viva",
   };
 
   const TYPE_COLORS = {
+    theory: "bg-blue-100 text-blue-700",
     internal: "bg-gray-100 text-gray-600",
-    midterm: "bg-blue-100 text-blue-700",
     practical: "bg-yellow-100 text-yellow-700",
-    annual: "bg-green-100 text-green-700",
+    viva: "bg-purple-100 text-purple-700",
   };
 
   return (
@@ -83,8 +69,7 @@ export default async function ExamsPage({ searchParams }) {
         <div>
           <h1 className="text-xl font-bold text-gray-900">Exams & Results</h1>
           <p className="text-gray-500 text-xs mt-0.5">
-            {allExams.length} total · {upcoming.length} upcoming · {past.length}{" "}
-            past
+            {allExams.length} total · {upcoming.length} upcoming · {past.length} past
           </p>
         </div>
         <Link
@@ -110,11 +95,11 @@ export default async function ExamsPage({ searchParams }) {
         </div>
       </div>
 
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-        {["", "internal", "midterm", "practical", "annual"].map((type) => (
+      <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
+        {["", "theory", "internal", "practical", "viva"].map((type) => (
           <a
             key={type}
-            href={`/exams?course=${filterCourse}&type=${type}`}
+            href={`/exams?type=${type}`}
             className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium border ${
               filterType === type
                 ? "bg-green-600 text-white border-green-600"
@@ -125,36 +110,6 @@ export default async function ExamsPage({ searchParams }) {
           </a>
         ))}
       </div>
-
-      <form method="GET" action="/exams" className="flex gap-2 mb-5">
-        <input type="hidden" name="type" value={filterType} />
-        <select
-          name="course"
-          defaultValue={filterCourse}
-          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        >
-          <option value="">All Courses</option>
-          {courses.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <button
-          type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
-        >
-          Filter
-        </button>
-        {(filterCourse || filterType) && (
-          <a
-            href="/exams"
-            className="bg-gray-100 text-gray-600 px-3 py-2 rounded-lg text-sm"
-          >
-            ✕
-          </a>
-        )}
-      </form>
 
       {filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-10 text-center text-gray-400 text-sm">
@@ -180,26 +135,19 @@ export default async function ExamsPage({ searchParams }) {
                         {exam.name}
                       </p>
                       {exam.exam_type && (
-                        <span
-                          className={`px-2 py-0.5 text-xs rounded-full font-medium ${TYPE_COLORS[exam.exam_type] || "bg-gray-100 text-gray-600"}`}
-                        >
+                        <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${TYPE_COLORS[exam.exam_type] || "bg-gray-100 text-gray-600"}`}>
                           {TYPE_LABELS[exam.exam_type] || exam.exam_type}
                         </span>
                       )}
-                      <span
-                        className={`px-2 py-0.5 text-xs rounded-full font-medium ${isUpcoming ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
-                      >
+                      <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${isUpcoming ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
                         {isUpcoming ? "Upcoming" : "Completed"}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500">
-                      {exam.course}{" "}
-                      {exam.semester ? `${exam.semester}` : ""} ·{" "}
-                      {exam.subject}
+                      {exam.course} {exam.semester ? `${exam.semester}` : ""} · {exam.subject}
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      📅 {exam.exam_date} · Max: {exam.max_marks} · Pass:{" "}
-                      {exam.passing_marks}
+                      📅 {exam.exam_date} · Max: {exam.max_marks} · Pass: {exam.passing_marks}
                       {exam.academic_year ? ` · ${exam.academic_year}` : ""}
                     </p>
                     {hasResults && (
