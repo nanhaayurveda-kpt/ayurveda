@@ -53,7 +53,7 @@ const TILES = [
     desc: "Class-wise fees",
   },
   {
-    href: "/attendance",
+    href: "/student-attendance",
     icon: "👨‍🎓",
     label: "Student Attendance",
     desc: "Daily student attendance",

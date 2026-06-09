@@ -58,7 +58,7 @@ export default async function ProfessorAttendancePage({ searchParams }) {
           <p className="text-gray-500 text-xs mt-0.5">{selectedDate}</p>
         </div>
         <Link
-          href="/dashboard"
+          href="/home"
           className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium"
         >
           ← Back
@@ -154,7 +154,7 @@ export default async function ProfessorAttendancePage({ searchParams }) {
                     name={`note_${p.id}`}
                     defaultValue={current?.note || ""}
                     placeholder="Note (optional)"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
                   />
                 </div>
               );
