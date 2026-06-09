@@ -56,7 +56,7 @@ export default function AttendanceForm({
               <div key={key} className="bg-white rounded-xl border border-green-100 shadow-sm overflow-hidden">
                 <div className="bg-green-600 px-4 py-2.5 flex justify-between items-center">
                   <span className="text-white font-bold text-sm">
-                    {cls}{sec !== "—" ? ` — Sem ${sec}` : ""}
+                  {sec !== "—" ? sec : cls}
                   </span>
                   <span className="bg-white text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">
                     {secStudents.length} students
