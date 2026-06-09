@@ -39,7 +39,7 @@ export async function POST(request) {
   const name = formData.get("name");
   const faculty = formData.get("faculty") || "Ayurveda";
   const course = formData.get("course");
-  const semester = formData.get("semester") || null;
+  const professionalYear = formData.get("semester") || "";
   const subject = formData.get("subject");
   const exam_date = formData.get("exam_date");
   const exam_type = formData.get("exam_type") || "internal";
@@ -102,7 +102,7 @@ export async function POST(request) {
     name,
     faculty,
     course,
-    semester,
+    semester: professionalYear,
     subject,
     exam_date,
     exam_type,
