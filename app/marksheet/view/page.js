@@ -44,9 +44,7 @@ export default async function MarksheetViewPage({ searchParams }) {
   const courseStudents = await db
     .select()
     .from(students)
-    .where(
-      and(eq(students.course, selectedCourse), eq(students.user_id, 1)),
-    )
+    .where(and(eq(students.course, selectedCourse), eq(students.user_id, 1)))
     .orderBy(students.roll_number, students.name);
 
   if (courseStudents.length === 0) {
@@ -114,10 +112,10 @@ export default async function MarksheetViewPage({ searchParams }) {
   });
 
   const examTypeLabel = {
+    theory: "Theory Examination",
     internal: "Internal Assessment",
-    midterm: "Mid Term Examination",
     practical: "Practical Examination",
-    annual: "Annual Examination",
+    viva: "Viva Voce Examination",
   };
 
   return (
@@ -317,7 +315,7 @@ export default async function MarksheetViewPage({ searchParams }) {
           <p>Generated: {new Date().toLocaleDateString("en-IN")}</p>
           <div className="text-center">
             <div className="border-t border-gray-400 w-32 mb-1" />
-            <p>Class Teacher</p>
+            <p>Controller of Examination</p>
           </div>
           <div className="text-center">
             <div className="border-t border-gray-400 w-32 mb-1" />
