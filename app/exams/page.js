@@ -35,7 +35,7 @@ export default async function ExamsPage({ searchParams }) {
       passing_marks: exams.passing_marks,
       exam_type: exams.exam_type,
       academic_year: exams.academic_year,
-      result_count: sql`(SELECT COUNT(*) FROM results WHERE results.exam_id = ${exams.id})`,
+      result_count: sql`(SELECT COUNT(*) FROM results WHERE exam_id = exams.id)`,
     })
     .from(exams)
     .where(eq(exams.user_id, 1))
@@ -156,12 +156,14 @@ export default async function ExamsPage({ searchParams }) {
                       📅 {exam.exam_date} · Max: {exam.max_marks} · Pass:{" "}
                       {exam.passing_marks}
                       {exam.academic_year ? ` · ${exam.academic_year}` : ""}
-                    </p>
-                    {hasResults && (
-                      <p className="text-xs text-green-600 mt-0.5">
-                        ✓ {exam.result_count} results entered
+                      <p
+                        className={`text-xs mt-0.5 ${hasResults ? "text-green-600" : "text-yellow-600"}`}
+                      >
+                        {hasResults
+                          ? `✓ ${exam.result_count} marks entered`
+                          : "⏳ Marks pending"}
                       </p>
-                    )}
+                    </p>
                   </div>
                   <div className="ml-3 shrink-0 flex flex-col gap-1.5 items-end">
                     <Link
