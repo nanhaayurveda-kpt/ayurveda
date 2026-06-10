@@ -45,6 +45,7 @@ export default async function CertificatePrintPage({ params }) {
       student_faculty: students.faculty,
       roll_number: students.roll_number,
       admission_no: students.admission_no,
+      enrolment_no: students.enrolment_no,
       dob: students.dob,
       gender: students.gender,
       father_name: students.father_name,
@@ -87,6 +88,12 @@ export default async function CertificatePrintPage({ params }) {
         year: "numeric",
       })
     : "—";
+
+  const isFemale = (cert.gender || "").toLowerCase() === "female";
+  const heShe = cert.gender ? (isFemale ? "She" : "He") : "He/She";
+  const hisHer = cert.gender ? (isFemale ? "her" : "his") : "his/her";
+  const HisHer = cert.gender ? (isFemale ? "Her" : "His") : "His/Her";
+  const himHer = cert.gender ? (isFemale ? "her" : "him") : "him/her";
 
   return (
     <div>
@@ -152,14 +159,14 @@ export default async function CertificatePrintPage({ params }) {
               <p>
                 This is to certify that <strong>{cert.student_name}</strong>,
                 {cert.gender
-                  ? ` ${cert.gender === "Male" ? "Son" : "Daughter"} of`
+                  ? ` ${isFemale ? "Daughter" : "Son"} of`
                   : " Child of"}{" "}
                 <strong>{cert.father_name || "—"}</strong>, resident of{" "}
                 <strong>{cert.address || "—"}</strong>, was a bonafide student
                 of this college.
               </p>
               <p>
-                He/She was enrolled in <strong>{cert.student_course}</strong>
+                {heShe} was enrolled in <strong>{cert.student_course}</strong>
                 {cert.student_semester
                   ? `, ${cert.student_semester}`
                   : ""}
@@ -176,12 +183,12 @@ export default async function CertificatePrintPage({ params }) {
                 </p>
               )}
               <p>
-                His/Her conduct during the stay in the college was{" "}
+                {HisHer} conduct during the stay in the college was{" "}
                 <strong>{cert.conduct || "Good"}</strong>.
               </p>
               <p>
-                This certificate is issued on his/her request for the purpose of{" "}
-                <strong>{cert.reason || "further studies"}</strong>.
+                This certificate is issued on {hisHer} request for the purpose
+                of <strong>{cert.reason || "further studies"}</strong>.
               </p>
             </>
           )}
@@ -191,7 +198,7 @@ export default async function CertificatePrintPage({ params }) {
               <p>
                 This is to certify that <strong>{cert.student_name}</strong>,
                 {cert.gender
-                  ? ` ${cert.gender === "Male" ? "Son" : "Daughter"} of`
+                  ? ` ${isFemale ? "Daughter" : "Son"} of`
                   : " Child of"}{" "}
                 <strong>{cert.father_name || "—"}</strong>, is/was a student of{" "}
                 <strong>{cert.student_course}</strong>
@@ -201,9 +208,9 @@ export default async function CertificatePrintPage({ params }) {
                 at this college.
               </p>
               <p>
-                To the best of our knowledge, his/her character and conduct have
-                been <strong>{cert.conduct || "Good"}</strong> throughout
-                his/her stay in this institution.
+                To the best of our knowledge, {hisHer} character and conduct
+                have been <strong>{cert.conduct || "Good"}</strong> throughout{" "}
+                {hisHer} stay in this institution.
               </p>
               {cert.custom_content && <p>{cert.custom_content}</p>}
             </>
@@ -214,13 +221,13 @@ export default async function CertificatePrintPage({ params }) {
               <p>
                 This is to certify that <strong>{cert.student_name}</strong>,
                 {cert.gender
-                  ? ` ${cert.gender === "Male" ? "Son" : "Daughter"} of`
+                  ? ` ${isFemale ? "Daughter" : "Son"} of`
                   : " Child of"}{" "}
                 <strong>{cert.father_name || "—"}</strong>, is a bonafide
                 student of this college.
               </p>
               <p>
-                He/She is currently enrolled in{" "}
+                {heShe} is currently enrolled in{" "}
                 <strong>{cert.student_course}</strong>
                 {cert.student_semester
                   ? `, ${cert.student_semester}`
@@ -242,7 +249,7 @@ export default async function CertificatePrintPage({ params }) {
               )}
               {cert.admission_no && (
                 <p>
-                  Scholar No: <strong>{cert.admission_no}</strong>
+                  Admission No: <strong>{cert.admission_no}</strong>
                 </p>
               )}
               {cert.custom_content && <p>{cert.custom_content}</p>}
@@ -254,7 +261,7 @@ export default async function CertificatePrintPage({ params }) {
               <p>
                 This is to certify that <strong>{cert.student_name}</strong>,
                 {cert.gender
-                  ? ` ${cert.gender === "Male" ? "Son" : "Daughter"} of`
+                  ? ` ${isFemale ? "Daughter" : "Son"} of`
                   : " Child of"}{" "}
                 <strong>{cert.father_name || "—"}</strong>, was a student of{" "}
                 <strong>{cert.student_course}</strong>
@@ -274,8 +281,9 @@ export default async function CertificatePrintPage({ params }) {
                 </p>
               )}
               <p>
-                He/She has no dues pending against him/her in this institution.
-                His/Her conduct was <strong>{cert.conduct || "Good"}</strong>.
+                {heShe} has no dues pending against {himHer} in this
+                institution. {HisHer} conduct was{" "}
+                <strong>{cert.conduct || "Good"}</strong>.
               </p>
               {cert.reason && (
                 <p>
@@ -317,19 +325,29 @@ export default async function CertificatePrintPage({ params }) {
                 </td>
               </tr>
               <tr>
-                <td className="px-4 py-2 text-gray-500">University Reg. No.</td>
+                <td className="px-4 py-2 text-gray-500">Admission No.</td>
                 <td className="px-4 py-2 font-medium text-gray-900">
                   {cert.admission_no || "—"}
                 </td>
               </tr>
-              {cert.dob && (
+              {cert.enrolment_no && (
                 <tr className="bg-gray-50">
+                  <td className="px-4 py-2 text-gray-500">
+                    University Enrolment No.
+                  </td>
+                  <td className="px-4 py-2 font-medium text-gray-900">
+                    {cert.enrolment_no}
+                  </td>
+                </tr>
+              )}
+              {cert.dob && (
+                <tr>
                   <td className="px-4 py-2 text-gray-500">Date of Birth</td>
                   <td className="px-4 py-2 font-medium text-gray-900">{dob}</td>
                 </tr>
               )}
               {cert.religion && (
-                <tr>
+                <tr className="bg-gray-50">
                   <td className="px-4 py-2 text-gray-500">Religion</td>
                   <td className="px-4 py-2 font-medium text-gray-900">
                     {cert.religion}
@@ -337,7 +355,7 @@ export default async function CertificatePrintPage({ params }) {
                 </tr>
               )}
               {cert.caste && (
-                <tr className="bg-gray-50">
+                <tr>
                   <td className="px-4 py-2 text-gray-500">Caste</td>
                   <td className="px-4 py-2 font-medium text-gray-900">
                     {cert.caste}
@@ -352,7 +370,6 @@ export default async function CertificatePrintPage({ params }) {
         <div className="flex justify-between items-end mt-10">
           <div className="text-xs text-gray-400">
             <p>Date of Issue: {issueDate}</p>
-            <p className="mt-6">Ayurveda College ERP</p>
           </div>
           <div className="text-center text-xs text-gray-500">
             <div className="border-t border-gray-400 w-40 mb-1" />
