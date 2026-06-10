@@ -1,239 +1,132 @@
-export const dynamic = "force-dynamic";
-
+// app/api/certificates/issue/route.js
+import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { students, users } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import * as schema from "@/lib/schema";
+import { eq, and } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
-import { redirect } from "next/navigation";
-import { SEMESTERS } from "@/lib/courses";
+import { setFlash } from "@/lib/flash";
 
-const REASONS = [
-  "Admission in another college",
-  "Higher studies",
-  "Course completed",
-  "Internship completed",
-  "Personal reasons",
-];
-
-export default async function IssueCertificatePage() {
+export async function POST(request) {
+  // ─── Auth ──────────────────────────────────────────────────────────────
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
-  if (!token) redirect("/login");
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+  }
   const session = await getSession(token);
-  if (!session) redirect("/login");
+  if (!session) {
+    return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+  }
 
   const userResult = await db
     .select()
-    .from(users)
-    .where(eq(users.email, session.email));
+    .from(schema.users)
+    .where(eq(schema.users.email, session.email));
   const user = userResult[0];
-  if (!user) redirect("/login");
+  if (!user) {
+    return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+  }
 
-  const allStudents = await db
+  // ─── Parse form ────────────────────────────────────────────────────────
+  const formData = await request.formData();
+  const studentIdRaw = formData.get("student_id");
+  const student_id = parseInt(studentIdRaw, 10);
+  const cert_type = formData.get("cert_type");
+  const issue_date = formData.get("issue_date");
+  const reason = formData.get("reason") || null;
+  const last_course = formData.get("last_course") || null;
+  const last_exam_passed = formData.get("last_exam_passed") || null;
+  const conduct = formData.get("conduct") || "Good";
+  const custom_content = formData.get("custom_content") || null;
+
+  if (isNaN(student_id)) {
+    await setFlash("error", "Invalid student");
+    return NextResponse.redirect(new URL("/certificates", request.url), { status: 303 });
+  }
+
+  if (!cert_type || !issue_date) {
+    await setFlash("error", "Certificate type and issue date are required");
+    return NextResponse.redirect(new URL("/certificates", request.url), { status: 303 });
+  }
+
+  // ─── Ownership check ───────────────────────────────────────────────────
+  const studentCheck = await db
     .select()
-    .from(students)
-    .where(eq(students.user_id, 1))
-    .orderBy(students.name);
+    .from(schema.students)
+    .where(
+      and(
+        eq(schema.students.id, student_id),
+        eq(schema.students.user_id, 1),
+      ),
+    );
+  if (!studentCheck.length) {
+    return NextResponse.redirect(new URL("/students", request.url), { status: 303 });
+  }
 
-  const today = new Date().toISOString().split("T")[0];
+  // ─── Duplicate check: same student + cert_type + issue_date ────────────
+  // Prevents accidental re-issue of the same certificate on the same day
+  const conditions = [
+    eq(schema.certificates.user_id, 1),
+    eq(schema.certificates.student_id, student_id),
+    eq(schema.certificates.cert_type, cert_type),
+    eq(schema.certificates.issue_date, issue_date),
+  ];
+  const existing = await db
+    .select()
+    .from(schema.certificates)
+    .where(and(...conditions));
+  if (existing.length > 0) {
+    await setFlash(
+      "error",
+      `A ${cert_type} certificate was already issued to ${studentCheck[0].name} on ${issue_date}.`,
+    );
+    return NextResponse.redirect(new URL("/certificates", request.url), { status: 303 });
+  }
 
-  return (
-    <div>
-      <div className="mb-4">
-        <h1 className="text-xl font-bold text-gray-900">Issue Certificate</h1>
-        <p className="text-gray-500 text-xs mt-0.5">
-          TC · Character · Bonafide · Migration
-        </p>
-      </div>
+  // ─── Auto-generate unique serial no (TC/2026/001 pattern) ──────────────
+  const SERIAL_PREFIXES = {
+    tc: "TC",
+    character: "CC",
+    bonafide: "BC",
+    migration: "MC",
+  };
+  const prefix = SERIAL_PREFIXES[cert_type] || "CERT";
+  const serialYear = issue_date.slice(0, 4);
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <form method="POST" action="/api/certificates/issue" className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Student <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="student_id"
-              required
-              defaultValue=""
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Select student...</option>
-              {allStudents.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name} — {s.semester || "—"}
-                  {s.roll_number ? ` · Roll ${s.roll_number}` : ""}
-                </option>
-              ))}
-            </select>
-          </div>
+  const sameTypeCerts = await db
+    .select({ serial_no: schema.certificates.serial_no })
+    .from(schema.certificates)
+    .where(
+      and(
+        eq(schema.certificates.user_id, 1),
+        eq(schema.certificates.cert_type, cert_type),
+      ),
+    );
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Certificate Type <span className="text-red-500">*</span>
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { val: "tc", label: "🔴 Transfer Certificate" },
-                { val: "character", label: "🔵 Character Certificate" },
-                { val: "bonafide", label: "🟢 Bonafide Certificate" },
-                { val: "migration", label: "🟣 Migration Certificate" },
-              ].map(({ val, label }) => (
-                <label
-                  key={val}
-                  className="flex items-center gap-2 border border-gray-200 rounded-lg p-3 cursor-pointer has-[:checked]:border-green-500 has-[:checked]:bg-green-50"
-                >
-                  <input
-                    type="radio"
-                    name="cert_type"
-                    value={val}
-                    required
-                    className="accent-green-600"
-                  />
-                  <span className="text-sm text-gray-700">{label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+  let maxNum = 0;
+  sameTypeCerts.forEach((c) => {
+    if (c.serial_no && c.serial_no.startsWith(`${prefix}/${serialYear}/`)) {
+      const n = parseInt(c.serial_no.split("/")[2], 10);
+      if (!isNaN(n) && n > maxNum) maxNum = n;
+    }
+  });
+  const serial_no = `${prefix}/${serialYear}/${String(maxNum + 1).padStart(3, "0")}`;
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Issue Date <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="issue_date"
-                defaultValue={today}
-                required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Serial No
-              </label>
-              <div className="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2.5 text-sm text-gray-500">
-                Auto (e.g. TC/2026/001)
-              </div>
-            </div>
-          </div>
+  // ─── Insert ────────────────────────────────────────────────────────────
+  await db.insert(schema.certificates).values({
+    student_id,
+    cert_type,
+    issue_date,
+    serial_no,
+    reason,
+    last_course,
+    last_exam_passed,
+    conduct,
+    custom_content,
+    user_id: 1,
+  });
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Conduct
-            </label>
-            <select
-              name="conduct"
-              defaultValue="Good"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="Excellent">Excellent</option>
-              <option value="Good">Good</option>
-              <option value="Satisfactory">Satisfactory</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Last Course Attended{" "}
-              <span className="text-gray-400 font-normal text-xs">
-                (for TC)
-              </span>
-            </label>
-            <select
-              name="last_course"
-              defaultValue=""
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Select... (optional)</option>
-              {SEMESTERS.map((s) => (
-                <option key={s} value={`BAMS ${s}`}>
-                  BAMS {s}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Last Exam Passed{" "}
-              <span className="text-gray-400 font-normal text-xs">
-                (for TC/Migration)
-              </span>
-            </label>
-            <select
-              name="last_exam_passed"
-              defaultValue=""
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Select... (optional)</option>
-              {SEMESTERS.map((s) => {
-                const label = s.toLowerCase().includes("intern")
-                  ? "Internship Completed"
-                  : `${s} Exam`;
-                return (
-                  <option key={s} value={label}>
-                    {label}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Reason / Purpose{" "}
-              <span className="text-gray-400 font-normal text-xs">
-                (optional)
-              </span>
-            </label>
-            <select
-              name="reason"
-              defaultValue=""
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Select... (optional)</option>
-              {REASONS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Additional Notes{" "}
-              <span className="text-gray-400 font-normal text-xs">
-                (optional)
-              </span>
-            </label>
-            <textarea
-              name="custom_content"
-              rows={3}
-              placeholder="Any additional details..."
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
-            />
-          </div>
-
-          <div className="flex gap-3 pt-2">
-            <button
-              type="submit"
-              className="flex-1 bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium"
-            >
-              Issue Certificate
-            </button>
-            <a
-              href="/certificates"
-              className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-medium text-center"
-            >
-              Cancel
-            </a>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+  await setFlash("success", "Certificate issued successfully!");
+  return NextResponse.redirect(new URL("/certificates", request.url), { status: 303 });
 }
