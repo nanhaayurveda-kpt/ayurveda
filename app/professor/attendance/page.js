@@ -1,7 +1,12 @@
 export const dynamic = "force-dynamic";
 
 import { db } from "@/lib/db";
-import { students, attendance, professor_subjects, professors } from "@/lib/schema";
+import {
+  students,
+  attendance,
+  professor_subjects,
+  professors,
+} from "@/lib/schema";
 import { eq, and } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
@@ -24,7 +29,10 @@ export default async function ProfessorAttendancePage({ searchParams }) {
   }
 
   const professorId = payload.professorId;
-  const profRow = await db.select().from(professors).where(eq(professors.id, professorId));
+  const profRow = await db
+    .select()
+    .from(professors)
+    .where(eq(professors.id, professorId));
   const prof = profRow[0];
   if (!prof) redirect("/professor-login");
 
@@ -45,7 +53,7 @@ export default async function ProfessorAttendancePage({ searchParams }) {
       assignedSubjects.map((s) => [
         s.course + "||" + s.semester,
         { course: s.course, semester: s.semester },
-      ])
+      ]),
     ).values(),
   ];
 
@@ -69,7 +77,7 @@ export default async function ProfessorAttendancePage({ searchParams }) {
 
   const filteredStudents = allStudents.filter((s) => {
     const isAssigned = assignedPairs.some(
-      (p) => p.course === s.course && p.semester === s.semester
+      (p) => p.course === s.course && p.semester === s.semester,
     );
     if (!isAssigned) return false;
     if (selectedCourse && s.course !== selectedCourse) return false;
@@ -84,16 +92,22 @@ export default async function ProfessorAttendancePage({ searchParams }) {
     .where(
       and(
         eq(attendance.date, selectedDate),
-        eq(attendance.user_id, prof.user_id)
-      )
+        eq(attendance.user_id, prof.user_id),
+      ),
     );
 
   const attendanceMap = {};
-  existing.forEach((a) => { attendanceMap[a.student_id] = a.status; });
+  existing.forEach((a) => {
+    attendanceMap[a.student_id] = a.status;
+  });
 
   const alreadyMarked = existing.length > 0;
-  const presentCount = filteredStudents.filter((s) => attendanceMap[s.id] === "present").length;
-  const absentCount = filteredStudents.filter((s) => attendanceMap[s.id] === "absent").length;
+  const presentCount = filteredStudents.filter(
+    (s) => attendanceMap[s.id] === "present",
+  ).length;
+  const absentCount = filteredStudents.filter(
+    (s) => attendanceMap[s.id] === "absent",
+  ).length;
 
   const grouped = {};
   filteredStudents.forEach((s) => {
@@ -107,7 +121,14 @@ export default async function ProfessorAttendancePage({ searchParams }) {
 
   // semesters for selected course filter
   const semestersForCourse = selectedCourse
-    ? [...new Set(assignedPairs.filter((p) => p.course === selectedCourse).map((p) => p.semester).filter(Boolean))].sort()
+    ? [
+        ...new Set(
+          assignedPairs
+            .filter((p) => p.course === selectedCourse)
+            .map((p) => p.semester)
+            .filter(Boolean),
+        ),
+      ].sort()
     : [];
 
   return (
@@ -117,7 +138,12 @@ export default async function ProfessorAttendancePage({ searchParams }) {
           <p className="text-white font-bold">{payload.professorName}</p>
           <p className="text-green-200 text-xs">Professor Portal</p>
         </div>
-        <a href="/api/professor-logout" className="text-red-300 text-sm font-medium">Logout</a>
+        <a
+          href="/api/professor-logout"
+          className="text-red-300 text-sm font-medium"
+        >
+          Logout
+        </a>
       </div>
 
       <div className="p-4">
@@ -131,16 +157,27 @@ export default async function ProfessorAttendancePage({ searchParams }) {
             <div className="flex gap-3">
               <div className="flex-1">
                 <label className="block text-xs text-gray-500 mb-1">Date</label>
-                <input type="date" name="date" defaultValue={selectedDate}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+                <input
+                  type="date"
+                  name="date"
+                  defaultValue={selectedDate}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
               </div>
               <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">Course</label>
-                <select name="course" defaultValue={selectedCourse}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                <label className="block text-xs text-gray-500 mb-1">
+                  Course
+                </label>
+                <select
+                  name="course"
+                  defaultValue={selectedCourse}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
                   <option value="">All My Courses</option>
                   {assignedCourses.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -148,19 +185,28 @@ export default async function ProfessorAttendancePage({ searchParams }) {
 
             {semestersForCourse.length > 0 && (
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Semester</label>
-                <select name="semester" defaultValue={selectedSemester}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                <label className="block text-xs text-gray-500 mb-1">
+                  Semester
+                </label>
+                <select
+                  name="semester"
+                  defaultValue={selectedSemester}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
                   <option value="">All Semesters</option>
                   {semestersForCourse.map((s) => (
-                    <option key={s} value={s}>Semester {s}</option>
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </select>
               </div>
             )}
 
-            <button type="submit"
-              className="w-full bg-gray-800 text-white py-2 rounded-lg text-sm font-medium">
+            <button
+              type="submit"
+              className="w-full bg-gray-800 text-white py-2 rounded-lg text-sm font-medium"
+            >
               Filter
             </button>
           </form>
@@ -168,8 +214,11 @@ export default async function ProfessorAttendancePage({ searchParams }) {
 
         {alreadyMarked && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 mb-4 text-xs text-yellow-800">
-            ⚠️ Attendance already marked for this date — edit below and save again.
-            <span className="ml-2 font-semibold">P: {presentCount} · A: {absentCount}</span>
+            ⚠️ Attendance already marked for this date — edit below and save
+            again.
+            <span className="ml-2 font-semibold">
+              P: {presentCount} · A: {absentCount}
+            </span>
           </div>
         )}
 
