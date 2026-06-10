@@ -130,7 +130,9 @@ export default async function CertificatePrintPage({ params }) {
             {college.college_name || "College Name"}
           </h2>
           {college.university_name && (
-            <p className="text-sm text-gray-500">{college.university_name}</p>
+            <p className="text-sm text-gray-500">
+              Affiliated to {college.university_name}
+            </p>
           )}
           {college.address && (
             <p className="text-xs text-gray-500 mt-1">{college.address}</p>
@@ -167,10 +169,7 @@ export default async function CertificatePrintPage({ params }) {
               </p>
               <p>
                 {heShe} was enrolled in <strong>{cert.student_course}</strong>
-                {cert.student_semester
-                  ? `, ${cert.student_semester}`
-                  : ""}
-                .
+                {cert.student_semester ? `, ${cert.student_semester}` : ""}.
               </p>
               {cert.last_course && (
                 <p>
@@ -202,10 +201,8 @@ export default async function CertificatePrintPage({ params }) {
                   : " Child of"}{" "}
                 <strong>{cert.father_name || "—"}</strong>, is/was a student of{" "}
                 <strong>{cert.student_course}</strong>
-                {cert.student_semester
-                  ? ` ${cert.student_semester}`
-                  : ""}{" "}
-                at this college.
+                {cert.student_semester ? ` ${cert.student_semester}` : ""} at
+                this college.
               </p>
               <p>
                 To the best of our knowledge, {hisHer} character and conduct
@@ -229,9 +226,7 @@ export default async function CertificatePrintPage({ params }) {
               <p>
                 {heShe} is currently enrolled in{" "}
                 <strong>{cert.student_course}</strong>
-                {cert.student_semester
-                  ? `, ${cert.student_semester}`
-                  : ""}
+                {cert.student_semester ? `, ${cert.student_semester}` : ""}
                 {cert.student_faculty
                   ? `, Faculty of ${cert.student_faculty}`
                   : ""}
@@ -265,10 +260,8 @@ export default async function CertificatePrintPage({ params }) {
                   : " Child of"}{" "}
                 <strong>{cert.father_name || "—"}</strong>, was a student of{" "}
                 <strong>{cert.student_course}</strong>
-                {cert.student_semester
-                  ? ` ${cert.student_semester}`
-                  : ""}{" "}
-                at this college.
+                {cert.student_semester ? ` ${cert.student_semester}` : ""} at
+                this college.
               </p>
               {cert.last_course && (
                 <p>

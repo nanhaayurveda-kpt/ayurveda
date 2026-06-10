@@ -167,7 +167,9 @@ export default async function MarksheetViewPage({ searchParams }) {
             {college.college_name || "College Name"}
           </h2>
           {college.university_name && (
-            <p className="text-xs text-gray-400">{college.university_name}</p>
+            <p className="text-xs text-gray-400">
+              Affiliated to {college.university_name}
+            </p>
           )}
           {college.address && (
             <p className="text-xs text-gray-500">{college.address}</p>
