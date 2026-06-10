@@ -7,6 +7,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
+import { SEMESTERS } from "@/lib/courses";
 
 export default async function TimetablePage({ searchParams }) {
   const cookieStore = await cookies();
@@ -16,17 +17,22 @@ export default async function TimetablePage({ searchParams }) {
   const user = userResult[0];
 
   const params = await searchParams;
-  const selectedCourse = params?.course || "";
+  const selectedSemester = params?.semester || "";
 
-  const courses = ["B.A.", "M.A.", "B.Com", "M.Com", "B.Sc.", "M.Sc.", "B.Sc. Ag.", "M.Sc. Ag."];
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   let schedule = [];
-  if (selectedCourse) {
+  if (selectedSemester) {
     schedule = await db
       .select()
       .from(timetable)
-      .where(and(eq(timetable.course, selectedCourse), eq(timetable.user_id, 1)));
+      .where(
+        and(
+          eq(timetable.course, "BAMS"),
+          eq(timetable.semester, selectedSemester),
+          eq(timetable.user_id, 1),
+        ),
+      );
   }
 
   const scheduleMap = {};
@@ -43,10 +49,10 @@ export default async function TimetablePage({ searchParams }) {
       <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Timetable</h1>
-          <p className="text-gray-500 text-xs mt-0.5">Course-wise weekly schedule</p>
+          <p className="text-gray-500 text-xs mt-0.5">Professional Year-wise weekly schedule</p>
         </div>
-        {selectedCourse && (
-          <Link href={`/timetable/add?course=${selectedCourse}`}
+        {selectedSemester && (
+          <Link href={`/timetable/add?semester=${encodeURIComponent(selectedSemester)}`}
             className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
             + Add Period
           </Link>
@@ -56,11 +62,11 @@ export default async function TimetablePage({ searchParams }) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
         <form className="flex gap-3">
           <div className="flex-1">
-            <label className="block text-xs text-gray-500 mb-1">Select Course</label>
-            <select name="course" defaultValue={selectedCourse}
+            <label className="block text-xs text-gray-500 mb-1">Select Professional Year</label>
+            <select name="semester" defaultValue={selectedSemester}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-              <option value="">-- Select Course --</option>
-              {courses.map((c) => <option key={c} value={c}>{c}</option>)}
+              <option value="">-- Select Professional Year --</option>
+              {SEMESTERS.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           <div className="flex items-end">
@@ -72,14 +78,14 @@ export default async function TimetablePage({ searchParams }) {
         </form>
       </div>
 
-      {!selectedCourse ? (
+      {!selectedSemester ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center text-gray-400 text-sm">
-          Please select a course to view its timetable.
+          Please select a professional year to view its timetable.
         </div>
       ) : schedule.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center text-gray-400 text-sm">
-          No timetable found for {selectedCourse}.{" "}
-          <Link href={`/timetable/add?course=${selectedCourse}`} className="text-green-600">
+          No timetable found for BAMS {selectedSemester}.{" "}
+          <Link href={`/timetable/add?semester=${encodeURIComponent(selectedSemester)}`} className="text-green-600">
             Add periods
           </Link>
         </div>

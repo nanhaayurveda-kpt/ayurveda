@@ -11,11 +11,15 @@ export async function POST(request) {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
   if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+    return NextResponse.redirect(new URL("/login", request.url), {
+      status: 303,
+    });
   }
   const session = await getSession(token);
   if (!session) {
-    return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+    return NextResponse.redirect(new URL("/login", request.url), {
+      status: 303,
+    });
   }
 
   const userResult = await db
@@ -24,7 +28,9 @@ export async function POST(request) {
     .where(eq(schema.users.email, session.email));
   const user = userResult[0];
   if (!user) {
-    return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+    return NextResponse.redirect(new URL("/login", request.url), {
+      status: 303,
+    });
   }
 
   const formData = await request.formData();
@@ -39,7 +45,9 @@ export async function POST(request) {
 
   if (!course || !day || isNaN(period) || !subject) {
     await setFlash("error", "Course, day, period and subject are required");
-    return NextResponse.redirect(new URL("/timetable/add", request.url), { status: 303 });
+    return NextResponse.redirect(new URL("/timetable/add", request.url), {
+      status: 303,
+    });
   }
 
   // Duplicate check: same course + semester + day + period already taken?
@@ -60,7 +68,13 @@ export async function POST(request) {
       "error",
       `${course} ${semester || ""} already has a period ${period} on ${day} (${existing[0].subject}). Delete it first to replace.`,
     );
-    return NextResponse.redirect(new URL(`/timetable?course=${course}`, request.url), { status: 303 });
+    return NextResponse.redirect(
+      new URL(
+        `/timetable?semester=${encodeURIComponent(semester || "")}`,
+        request.url,
+      ),
+      { status: 303 },
+    );
   }
 
   await db.insert(schema.timetable).values({
@@ -76,5 +90,8 @@ export async function POST(request) {
   });
 
   await setFlash("success", "Period added successfully!");
-  return NextResponse.redirect(new URL(`/timetable?course=${course}`, request.url), { status: 303 });
+  return NextResponse.redirect(
+    new URL(`/timetable?course=${course}`, request.url),
+    { status: 303 },
+  );
 }

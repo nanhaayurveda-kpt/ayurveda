@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import { users } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import AddPeriodForm from "./AddPeriodForm";
-import { COURSES } from "@/lib/courses";
+import { SEMESTERS, BAMS_SUBJECTS } from "@/lib/courses";
 
 export default async function AddPeriodPage({ searchParams }) {
   const cookieStore = await cookies();
@@ -21,10 +21,8 @@ export default async function AddPeriodPage({ searchParams }) {
   const user = userResult[0];
 
   const params = await searchParams;
-  const selectedCourse = params?.course || "";
+  const selectedSemester = params?.semester || "";
 
-  const courses = COURSES;
-  const semesters = ["1", "2", "3", "4", "5", "6"];
   const days = [
     "Monday",
     "Tuesday",
@@ -50,12 +48,12 @@ export default async function AddPeriodPage({ searchParams }) {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <AddPeriodForm
-          courses={courses}
-          semesters={semesters}
+          semesters={SEMESTERS}
+          subjects={BAMS_SUBJECTS}
           days={days}
           allProfessors={allProfessors}
-          selectedCourse={selectedCourse}
-        />{" "}
+          selectedSemester={selectedSemester}
+        />
       </div>
     </div>
   );
