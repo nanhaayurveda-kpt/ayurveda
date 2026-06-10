@@ -36,18 +36,6 @@ export default async function CertificatesPage({ searchParams }) {
 
   const params = await searchParams;
   const filterType = params?.type || "";
-  const filterCourse = params?.course || "";
-
-  const courses = [
-    "B.A.",
-    "M.A.",
-    "B.Com",
-    "M.Com",
-    "B.Sc.",
-    "M.Sc.",
-    "B.Sc. Ag.",
-    "M.Sc. Ag.",
-  ];
 
   const allCerts = await db
     .select({
@@ -59,7 +47,6 @@ export default async function CertificatesPage({ searchParams }) {
       created_at: certificates.created_at,
       student_id: certificates.student_id,
       student_name: students.name,
-      student_course: students.course,
       student_semester: students.semester,
       roll_number: students.roll_number,
       admission_no: students.admission_no,
@@ -69,11 +56,9 @@ export default async function CertificatesPage({ searchParams }) {
     .where(eq(students.user_id, 1))
     .orderBy(desc(certificates.created_at));
 
-  const filtered = allCerts.filter((c) => {
-    const matchType = !filterType || c.cert_type === filterType;
-    const matchCourse = !filterCourse || c.student_course === filterCourse;
-    return matchType && matchCourse;
-  });
+  const filtered = filterType
+    ? allCerts.filter((c) => c.cert_type === filterType)
+    : allCerts;
 
   const counts = {
     tc: allCerts.filter((c) => c.cert_type === "tc").length,
@@ -120,7 +105,7 @@ export default async function CertificatesPage({ searchParams }) {
         </div>
       </div>
 
-      <div className="flex gap-2 flex-wrap mb-3">
+      <div className="flex gap-2 flex-wrap mb-4">
         {[
           { val: "", label: "All" },
           { val: "tc", label: "TC" },
@@ -130,7 +115,7 @@ export default async function CertificatesPage({ searchParams }) {
         ].map(({ val, label }) => (
           <a
             key={val}
-            href={`/certificates?type=${val}&course=${filterCourse}`}
+            href={`/certificates?type=${val}`}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
               filterType === val
                 ? "bg-green-600 text-white border-green-600"
@@ -141,36 +126,6 @@ export default async function CertificatesPage({ searchParams }) {
           </a>
         ))}
       </div>
-
-      <form method="GET" action="/certificates" className="flex gap-2 mb-4">
-        <input type="hidden" name="type" value={filterType} />
-        <select
-          name="course"
-          defaultValue={filterCourse}
-          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        >
-          <option value="">All Courses</option>
-          {courses.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <button
-          type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
-        >
-          Filter
-        </button>
-        {filterCourse && (
-          <a
-            href={`/certificates?type=${filterType}`}
-            className="bg-gray-100 text-gray-600 px-3 py-2 rounded-lg text-sm"
-          >
-            ✕
-          </a>
-        )}
-      </form>
 
       {filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-10 text-center text-gray-400 text-sm">
@@ -195,8 +150,7 @@ export default async function CertificatesPage({ searchParams }) {
                   </span>
                 </div>
                 <p className="text-xs text-gray-500">
-                  {cert.student_course || "—"}{" "}
-                  {cert.student_semester ? `${cert.student_semester}` : ""}
+                  {cert.student_semester || "—"}
                   {cert.roll_number ? ` · Roll ${cert.roll_number}` : ""}
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5">

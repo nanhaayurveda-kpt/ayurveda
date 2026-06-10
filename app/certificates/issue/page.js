@@ -2,10 +2,12 @@ export const dynamic = "force-dynamic";
 
 import { db } from "@/lib/db";
 import { students, users } from "@/lib/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
-import { redirect } from "next/navigation";export default async function IssueCertificatePage({ searchParams }) {
+import { redirect } from "next/navigation";
+
+export default async function IssueCertificatePage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
   if (!token) redirect("/login");
@@ -18,37 +20,14 @@ import { redirect } from "next/navigation";export default async function IssueC
     .where(eq(users.email, session.email));
   const user = userResult[0];
   if (!user) redirect("/login");
-  const params = await searchParams;
-  const selectedCourse = params?.course || "";
 
-  const allStudents = selectedCourse
-    ? await db
-        .select()
-        .from(students)
-        .where(
-          and(
-            eq(students.course, selectedCourse),
-            eq(students.user_id, 1),
-          ),
-        )
-        .orderBy(students.name)
-    : await db
-        .select()
-        .from(students)
-        .where(eq(students.user_id, 1))
-        .orderBy(students.name);
+  const allStudents = await db
+    .select()
+    .from(students)
+    .where(eq(students.user_id, 1))
+    .orderBy(students.name);
 
   const today = new Date().toISOString().split("T")[0];
-  const courses = [
-    "B.A.",
-    "M.A.",
-    "B.Com",
-    "M.Com",
-    "B.Sc.",
-    "M.Sc.",
-    "B.Sc. Ag.",
-    "M.Sc. Ag.",
-  ];
 
   return (
     <div>
@@ -57,29 +36,6 @@ import { redirect } from "next/navigation";export default async function IssueC
         <p className="text-gray-500 text-xs mt-0.5">
           TC · Character · Bonafide · Migration
         </p>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
-        <form method="GET" action="/certificates/issue" className="flex gap-3">
-          <select
-            name="course"
-            defaultValue={selectedCourse}
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            <option value="">All Courses</option>
-            {courses.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium"
-          >
-            Filter
-          </button>
-        </form>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
@@ -97,7 +53,7 @@ import { redirect } from "next/navigation";export default async function IssueC
               <option value="">Select student...</option>
               {allStudents.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name} — {s.course} {s.semester ? `${s.semester}` : ""}
+                  {s.name} — {s.semester || "—"}
                   {s.roll_number ? ` · Roll ${s.roll_number}` : ""}
                 </option>
               ))}
@@ -124,7 +80,7 @@ import { redirect } from "next/navigation";export default async function IssueC
                     name="cert_type"
                     value={val}
                     required
-                    className="accent-indigo-600"
+                    className="accent-green-600"
                   />
                   <span className="text-sm text-gray-700">{label}</span>
                 </label>
@@ -152,7 +108,7 @@ import { redirect } from "next/navigation";export default async function IssueC
               <input
                 type="text"
                 name="serial_no"
-                placeholder="e.g. TC/2024/001"
+                placeholder="e.g. TC/2026/001"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
@@ -183,7 +139,7 @@ import { redirect } from "next/navigation";export default async function IssueC
             <input
               type="text"
               name="last_course"
-              placeholder="e.g. B.A. Final Year"
+              placeholder="e.g. BAMS 3rd Professional"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
@@ -198,7 +154,7 @@ import { redirect } from "next/navigation";export default async function IssueC
             <input
               type="text"
               name="last_exam_passed"
-              placeholder="e.g. B.A. Annual Exam 2024"
+              placeholder="e.g. 2nd Professional Exam 2025"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
