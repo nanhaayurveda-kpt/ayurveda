@@ -4,6 +4,9 @@ import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { db } from "@/lib/db";
+import { notices } from "@/lib/schema";
+import { eq, desc } from "drizzle-orm";
 
 const SECRET = new TextEncoder().encode(process.env.SESSION_SECRET);
 
@@ -19,6 +22,13 @@ export default async function ProfessorDashboard() {
   } catch {
     redirect("/professor-login");
   }
+
+  const allNotices = await db
+    .select()
+    .from(notices)
+    .where(eq(notices.user_id, 1))
+    .orderBy(desc(notices.created_at))
+    .limit(5);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -72,6 +82,36 @@ export default async function ProfessorDashboard() {
             <div className="text-gray-400 text-xs mt-1">Enter marks</div>
           </Link>
         </div>
+
+        {allNotices.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-6">
+            <div className="px-5 py-3 border-b border-gray-100">
+              <h2 className="font-bold text-gray-800 text-sm">Notices</h2>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {allNotices.map((n) => (
+                <div key={n.id} className="px-5 py-4">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-gray-900 text-sm">
+                      {n.title}
+                    </p>
+                    {n.priority === "urgent" && (
+                      <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-medium">
+                        Urgent
+                      </span>
+                    )}
+                    {n.priority === "important" && (
+                      <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                        Important
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-gray-500 text-xs mt-1">{n.content}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

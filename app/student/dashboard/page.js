@@ -11,7 +11,7 @@ import {
   exams,
   notices,
 } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export default async function StudentDashboardPage() {
   const cookieStore = await cookies();
@@ -49,7 +49,7 @@ export default async function StudentDashboardPage() {
     .select()
     .from(notices)
     .where(eq(notices.user_id, student.user_id))
-    .orderBy(notices.created_at)
+    .orderBy(desc(notices.created_at))
     .limit(5);
 
   const examResults = await db
@@ -195,9 +195,7 @@ export default async function StudentDashboardPage() {
                       <p className="text-xs text-gray-400">
                         Due:{" "}
                         {f.due_date
-                          ? new Date(
-                              Number(f.due_date) * 1000,
-                            ).toLocaleDateString("en-IN")
+                          ? new Date(f.due_date).toLocaleDateString("en-IN")
                           : "—"}
                       </p>
                     </div>
