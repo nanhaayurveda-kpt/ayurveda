@@ -7,6 +7,8 @@ import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import PromoteForm from "./PromoteForm";
+import { SEMESTERS } from "@/lib/courses";
+
 export default async function PromotePage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
@@ -26,8 +28,6 @@ export default async function PromotePage() {
     .from(students)
     .where(eq(students.user_id, 1));
 
-  const semesters = ["1", "2", "3", "4", "5", "6"];
-
   const now = new Date();
   const baseYear =
     now.getMonth() < 3 ? now.getFullYear() - 1 : now.getFullYear();
@@ -43,21 +43,21 @@ export default async function PromotePage() {
       <div className="mb-4">
         <h1 className="text-xl font-bold text-gray-900">Student Promotion</h1>
         <p className="text-gray-500 text-xs mt-0.5">
-          Semester-wise bulk promotion
+          Professional Year-wise bulk promotion
         </p>
       </div>
 
       <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mb-4 text-xs text-yellow-800">
-        ⚠️ This action will move all students of the selected semester to the
-        next semester. This cannot be undone.
+        ⚠️ This action will move all students of the selected professional year
+        to the next professional year. This cannot be undone.
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4">
         <p className="text-xs font-medium text-gray-600 mb-3">
-          Current Semesters
+          Current Professional Years
         </p>
         <div className="grid grid-cols-3 gap-2">
-          {semesters.map((sem) => (
+          {SEMESTERS.map((sem) => (
             <div
               key={sem}
               className="bg-green-50 border border-green-100 rounded-lg p-2 text-center"
@@ -76,7 +76,7 @@ export default async function PromotePage() {
           Promote Students
         </p>
         <PromoteForm
-          semesters={semesters}
+          semesters={SEMESTERS}
           semCounts={semCounts}
           nextAcademicYear={nextAcademicYear}
         />

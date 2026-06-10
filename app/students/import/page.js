@@ -1,8 +1,6 @@
-import { COURSES, FACULTIES } from "@/lib/courses";
+import { COURSES, FACULTIES, SEMESTERS } from "@/lib/courses";
 
 export default function ImportPage() {
-  const semesters = ["1", "2", "3", "4", "5", "6"];
-
   return (
     <div>
       <div className="mb-6">
@@ -27,8 +25,8 @@ export default function ImportPage() {
           ✓ First row (header) will be skipped automatically
           <br />
           ✓ Duplicate roll numbers will be skipped
-          <br />✓ Faculty, Course & Semester selected below applies to all
-          students
+          <br />✓ Faculty, Course & Professional Year selected below applies to
+          all students
         </p>
       </div>
 
@@ -74,7 +72,7 @@ export default function ImportPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Semester
+                Professional Year
               </label>
               <select
                 name="semester"
@@ -82,9 +80,9 @@ export default function ImportPage() {
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select...</option>
-                {semesters.map((s) => (
+                {SEMESTERS.map((s) => (
                   <option key={s} value={s}>
-                    Semester {s}
+                    {s}
                   </option>
                 ))}
               </select>
