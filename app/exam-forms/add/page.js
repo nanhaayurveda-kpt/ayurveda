@@ -5,7 +5,10 @@ import { students, users } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
-import { redirect } from "next/navigation";export default async function AddExamFormPage() {
+import { redirect } from "next/navigation";
+import { SEMESTERS } from "@/lib/courses";
+
+export default async function AddExamFormPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
   if (!token) redirect("/login");
@@ -28,8 +31,6 @@ import { redirect } from "next/navigation";export default async function AddExa
   const baseYear =
     now.getMonth() < 3 ? now.getFullYear() - 1 : now.getFullYear();
   const currentAcademicYear = `${baseYear}-${String(baseYear + 1).slice(-2)}`;
-
-  const semesters = ["1", "2", "3", "4", "5", "6"];
 
   return (
     <div>
@@ -55,7 +56,7 @@ import { redirect } from "next/navigation";export default async function AddExa
               <option value="">Select student...</option>
               {allStudents.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name} — {s.course} Sem {s.semester || "—"}
+                  {s.name} — {s.course}, {s.semester || "—"}
                 </option>
               ))}
             </select>
@@ -64,7 +65,7 @@ import { redirect } from "next/navigation";export default async function AddExa
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Semester <span className="text-red-500">*</span>
+                Professional Year <span className="text-red-500">*</span>
               </label>
               <select
                 name="semester"
@@ -73,9 +74,9 @@ import { redirect } from "next/navigation";export default async function AddExa
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select...</option>
-                {semesters.map((s) => (
+                {SEMESTERS.map((s) => (
                   <option key={s} value={s}>
-                    Semester {s}
+                    {s}
                   </option>
                 ))}
               </select>
