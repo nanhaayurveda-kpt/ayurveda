@@ -6,6 +6,15 @@ import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
+import { SEMESTERS } from "@/lib/courses";
+
+const REASONS = [
+  "Admission in another college",
+  "Higher studies",
+  "Course completed",
+  "Internship completed",
+  "Personal reasons",
+];
 
 export default async function IssueCertificatePage() {
   const cookieStore = await cookies();
@@ -105,12 +114,9 @@ export default async function IssueCertificatePage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Serial No
               </label>
-              <input
-                type="text"
-                name="serial_no"
-                placeholder="e.g. TC/2026/001"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
+              <div className="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2.5 text-sm text-gray-500">
+                Auto (e.g. TC/2026/001)
+              </div>
             </div>
           </div>
 
@@ -136,12 +142,18 @@ export default async function IssueCertificatePage() {
                 (for TC)
               </span>
             </label>
-            <input
-              type="text"
+            <select
               name="last_course"
-              placeholder="e.g. BAMS 3rd Professional"
+              defaultValue=""
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
+            >
+              <option value="">Select... (optional)</option>
+              {SEMESTERS.map((s) => (
+                <option key={s} value={`BAMS ${s}`}>
+                  BAMS {s}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -151,12 +163,23 @@ export default async function IssueCertificatePage() {
                 (for TC/Migration)
               </span>
             </label>
-            <input
-              type="text"
+            <select
               name="last_exam_passed"
-              placeholder="e.g. 2nd Professional Exam 2025"
+              defaultValue=""
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
+            >
+              <option value="">Select... (optional)</option>
+              {SEMESTERS.map((s) => {
+                const label = s.toLowerCase().includes("intern")
+                  ? "Internship Completed"
+                  : `${s} Exam`;
+                return (
+                  <option key={s} value={label}>
+                    {label}
+                  </option>
+                );
+              })}
+            </select>
           </div>
 
           <div>
@@ -166,12 +189,18 @@ export default async function IssueCertificatePage() {
                 (optional)
               </span>
             </label>
-            <input
-              type="text"
+            <select
               name="reason"
-              placeholder="e.g. Admission in another college"
+              defaultValue=""
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
+            >
+              <option value="">Select... (optional)</option>
+              {REASONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
