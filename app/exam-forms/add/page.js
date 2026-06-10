@@ -56,7 +56,7 @@ export default async function AddExamFormPage() {
               <option value="">Select student...</option>
               {allStudents.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name} — {s.course}, {s.semester || "—"}
+                  {s.name} — {s.semester || "—"}
                 </option>
               ))}
             </select>
