@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function PromoteForm({ semesters, semCounts, nextAcademicYear }) {
+export default function PromoteForm({ semesters, semCounts, nextAcademicYear, students }) {
   const [submitting, setSubmitting] = useState(false);
   const [fromSem, setFromSem] = useState("");
 
@@ -12,13 +12,27 @@ export default function PromoteForm({ semesters, semCounts, nextAcademicYear }) 
       ? semesters[fromIndex + 1]
       : "";
   const isFinalYear = fromSem && !toSem;
+  const fromStudents = fromSem
+    ? students.filter((s) => s.semester === fromSem)
+    : [];
 
   function handleSubmit(e) {
     if (!toSem) {
       e.preventDefault();
       return;
     }
-    if (!confirm(`Promote all ${fromSem} students to ${toSem}? This cannot be undone.`)) {
+    const fd = new FormData(e.currentTarget);
+    const ids = fd.getAll("student_ids");
+    if (ids.length === 0) {
+      alert("Select at least one student to promote.");
+      e.preventDefault();
+      return;
+    }
+    if (
+      !confirm(
+        `Promote ${ids.length} of ${fromStudents.length} students: ${fromSem} → ${toSem}? This cannot be undone.`,
+      )
+    ) {
       e.preventDefault();
       return;
     }
@@ -62,6 +76,46 @@ export default function PromoteForm({ semesters, semCounts, nextAcademicYear }) 
           </p>
         )}
       </div>
+
+      {fromSem && toSem && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Students to Promote{" "}
+            <span className="text-gray-400 font-normal text-xs">
+              (fail/detain हुए students का ✓ हटा दो)
+            </span>
+          </label>
+          {fromStudents.length === 0 ? (
+            <div className="border border-gray-200 rounded-lg px-3 py-4 text-center text-xs text-gray-400">
+              No students in {fromSem}.
+            </div>
+          ) : (
+            <div
+              key={fromSem}
+              className="border border-gray-200 rounded-lg divide-y divide-gray-100 max-h-64 overflow-y-auto"
+            >
+              {fromStudents.map((s) => (
+                <label
+                  key={s.id}
+                  className="flex items-center gap-3 px-3 py-2 text-sm text-gray-800 cursor-pointer hover:bg-gray-50"
+                >
+                  <input
+                    type="checkbox"
+                    name="student_ids"
+                    value={s.id}
+                    defaultChecked
+                    className="accent-green-600 w-4 h-4"
+                  />
+                  <span>
+                    {s.name}
+                    {s.roll_number ? ` · Roll ${s.roll_number}` : ""}
+                  </span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">

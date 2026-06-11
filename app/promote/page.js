@@ -79,6 +79,12 @@ export default async function PromotePage() {
           semesters={SEMESTERS}
           semCounts={semCounts}
           nextAcademicYear={nextAcademicYear}
+          students={allStudents.map((s) => ({
+            id: s.id,
+            name: s.name,
+            roll_number: s.roll_number,
+            semester: s.semester,
+          }))}
         />
       </div>
     </div>
