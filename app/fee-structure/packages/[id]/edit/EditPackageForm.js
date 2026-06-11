@@ -91,11 +91,11 @@ export default function EditPackageForm({ pkg }) {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Professional Year</label>
           <select name="semester" value={selectedSemester}
             onChange={(e) => setSelectedSemester(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-            <option value="">All Semesters</option>
+            <option value="">All Professional Years</option>
             {SEMESTERS.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
@@ -121,7 +121,7 @@ export default function EditPackageForm({ pkg }) {
               <input type="checkbox" id={`edit_${ft.value}`}
                 checked={!!checkedTypes[ft.value]}
                 onChange={() => handleCheck(ft.value)}
-                className="w-4 h-4 accent-indigo-600" />
+                className="w-4 h-4 accent-green-600" />
               <label htmlFor={`edit_${ft.value}`}
                 className="flex-1 text-sm font-medium text-gray-700 cursor-pointer">
                 {ft.label}

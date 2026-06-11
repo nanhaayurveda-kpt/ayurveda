@@ -102,13 +102,13 @@ export default async function StudentsPage({ searchParams }) {
           name="search"
           defaultValue={search}
           placeholder="🔍 Name, roll no, phone..."
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
         />
         <div className="flex gap-2">
           <select
             name="faculty"
             defaultValue={selectedFaculty}
-            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <option value="">All Faculties</option>
             {faculties.map((f) => (
@@ -120,7 +120,7 @@ export default async function StudentsPage({ searchParams }) {
           <select
             name="year"
             defaultValue={selectedYear}
-            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <option value="">All Years</option>
             {years.map((y) => (

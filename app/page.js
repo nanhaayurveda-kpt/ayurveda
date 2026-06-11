@@ -105,7 +105,7 @@ export default async function HomePage() {
             </Link>
             <Link
               href="/student/login"
-              className="bg-teal-600 text-white px-8 py-3 rounded-lg hover:bg-teal-700 font-medium text-sm shadow-sm"
+              className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 font-medium text-sm shadow-sm"
             >
               🎓 Student Login
             </Link>

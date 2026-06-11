@@ -51,7 +51,7 @@ export default function EditFeeForm({ fee }) {
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Professional Year</label>
           <select name="semester" defaultValue={fee.semester || ""}
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
             <option value="">—</option>

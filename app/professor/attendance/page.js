@@ -193,7 +193,7 @@ export default async function ProfessorAttendancePage({ searchParams }) {
                   defaultValue={selectedSemester}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
-                  <option value="">All Semesters</option>
+                  <option value="">All Professional Years</option>
                   {semestersForCourse.map((s) => (
                     <option key={s} value={s}>
                       {s}

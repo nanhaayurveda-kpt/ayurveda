@@ -35,7 +35,7 @@ export default function LoginPage() {
           </a>
           <a
             href="/student/login"
-            className="flex items-center justify-center gap-3 w-full border border-teal-200 rounded-xl px-4 py-3 text-sm font-medium text-teal-700 hover:bg-teal-50 transition"
+            className="flex items-center justify-center gap-3 w-full border border-green-200 rounded-xl px-4 py-3 text-sm font-medium text-green-700 hover:bg-green-50 transition"
           >
             🎓 Student Login — Admission No and Phone
           </a>

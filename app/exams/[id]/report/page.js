@@ -132,7 +132,7 @@ export default async function ReportCardPage({ params }) {
               </span>
             </div>
             <div>
-              <span className="text-gray-500">Semester:</span>
+              <span className="text-gray-500">Professional Year:</span>
               <span className="font-medium text-gray-900 ml-1">
                 {exam.semester || "—"}
               </span>
