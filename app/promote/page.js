@@ -84,6 +84,7 @@ export default async function PromotePage() {
             name: s.name,
             roll_number: s.roll_number,
             semester: s.semester,
+            academic_year: s.academic_year,
           }))}
         />
       </div>

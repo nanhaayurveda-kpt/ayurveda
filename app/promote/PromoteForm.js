@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 
-export default function PromoteForm({ semesters, semCounts, nextAcademicYear, students }) {
+export default function PromoteForm({
+  semesters,
+  semCounts,
+  nextAcademicYear,
+  students,
+}) {
   const [submitting, setSubmitting] = useState(false);
   const [fromSem, setFromSem] = useState("");
 
@@ -15,6 +20,16 @@ export default function PromoteForm({ semesters, semCounts, nextAcademicYear, st
   const fromStudents = fromSem
     ? students.filter((s) => s.semester === fromSem)
     : [];
+
+  // students के मौजूदा academic year से +1 (जैसे 2026-27 → 2027-28)
+  let suggestedYear = nextAcademicYear;
+  const currentAY = fromStudents.find((s) => s.academic_year)?.academic_year;
+  if (currentAY) {
+    const startYear = parseInt(currentAY.slice(0, 4), 10);
+    if (!isNaN(startYear)) {
+      suggestedYear = `${startYear + 1}-${String(startYear + 2).slice(-2)}`;
+    }
+  }
 
   function handleSubmit(e) {
     if (!toSem) {
@@ -50,9 +65,13 @@ export default function PromoteForm({ semesters, semCounts, nextAcademicYear, st
         <label className="block text-sm font-medium text-gray-700 mb-1">
           From Professional Year <span className="text-red-500">*</span>
         </label>
-        <select name="from_semester" required value={fromSem}
+        <select
+          name="from_semester"
+          required
+          value={fromSem}
           onChange={(e) => setFromSem(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
           <option value="">Select professional year to promote...</option>
           {semesters.map((sem) => (
             <option key={sem} value={sem}>
@@ -72,7 +91,8 @@ export default function PromoteForm({ semesters, semCounts, nextAcademicYear, st
         <input type="hidden" name="to_semester" value={toSem} />
         {isFinalYear && (
           <p className="text-xs text-red-500 mt-1">
-            Internship is the final year — interns pass out, they are not promoted.
+            Internship is the final year — interns pass out, they are not
+            promoted.
           </p>
         )}
       </div>
@@ -121,15 +141,27 @@ export default function PromoteForm({ semesters, semCounts, nextAcademicYear, st
         <label className="block text-sm font-medium text-gray-700 mb-1">
           New Academic Year <span className="text-red-500">*</span>
         </label>
-        <input type="text" name="new_academic_year" required
-          defaultValue={nextAcademicYear}
+        <input
+          type="text"
+          name="new_academic_year"
+          required
+          key={suggestedYear}
+          defaultValue={suggestedYear}
           placeholder="e.g. 2027-28"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
       </div>
 
-      <button type="submit" disabled={submitting || !toSem}
-        className="w-full bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-        {submitting ? "Promoting..." : toSem ? `Promote to ${toSem} →` : "Promote Students →"}
+      <button
+        type="submit"
+        disabled={submitting || !toSem}
+        className="w-full bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {submitting
+          ? "Promoting..."
+          : toSem
+            ? `Promote to ${toSem} →`
+            : "Promote Students →"}
       </button>
     </form>
   );
