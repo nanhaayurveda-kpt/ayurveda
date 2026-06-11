@@ -10,9 +10,15 @@ import { MASTER_USER_ID } from "@/lib/config";
 export async function POST(request) {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
-  if (!token) return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+  if (!token)
+    return NextResponse.redirect(new URL("/login", request.url), {
+      status: 303,
+    });
   const session = await getSession(token);
-  if (!session) return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+  if (!session)
+    return NextResponse.redirect(new URL("/login", request.url), {
+      status: 303,
+    });
 
   const formData = await request.formData();
   const student_id = parseInt(formData.get("student_id"), 10);
@@ -24,16 +30,68 @@ export async function POST(request) {
 
   if (!student_id || !department || !start_date || !end_date) {
     await setFlash("error", "Student, department and dates are required");
-    return NextResponse.redirect(new URL("/internship/add", request.url), { status: 303 });
+    return NextResponse.redirect(new URL("/internship/add", request.url), {
+      status: 303,
+    });
   }
 
-  const studentCheck = await db.select().from(schema.students)
-    .where(and(eq(schema.students.id, student_id), eq(schema.students.user_id, MASTER_USER_ID)));
+  const studentCheck = await db
+    .select()
+    .from(schema.students)
+    .where(
+      and(
+        eq(schema.students.id, student_id),
+        eq(schema.students.user_id, MASTER_USER_ID),
+      ),
+    );
   if (!studentCheck.length) {
     await setFlash("error", "Student not found");
-    return NextResponse.redirect(new URL("/internship/add", request.url), { status: 303 });
+    return NextResponse.redirect(new URL("/internship/add", request.url), {
+      status: 303,
+    });
   }
 
+  // Duplicate: same student + department (rotatory में हर department एक बार)
+  const sameDept = await db
+    .select()
+    .from(schema.internship_postings)
+    .where(
+      and(
+        eq(schema.internship_postings.user_id, MASTER_USER_ID),
+        eq(schema.internship_postings.student_id, student_id),
+        eq(schema.internship_postings.department, department),
+      ),
+    );
+  if (sameDept.length > 0) {
+    await setFlash(
+      "error",
+      `${studentCheck[0].name} already has a ${department} posting.`,
+    );
+    return NextResponse.redirect(new URL("/internship", request.url), {
+      status: 303,
+    });
+  }
+
+  // एक समय एक ही ongoing posting
+  const ongoing = await db
+    .select()
+    .from(schema.internship_postings)
+    .where(
+      and(
+        eq(schema.internship_postings.user_id, MASTER_USER_ID),
+        eq(schema.internship_postings.student_id, student_id),
+        eq(schema.internship_postings.status, "ongoing"),
+      ),
+    );
+  if (ongoing.length > 0) {
+    await setFlash(
+      "error",
+      `${studentCheck[0].name} already has an ongoing posting in ${ongoing[0].department}. Mark it complete first.`,
+    );
+    return NextResponse.redirect(new URL("/internship", request.url), {
+      status: 303,
+    });
+  }
   await db.insert(schema.internship_postings).values({
     student_id,
     user_id: MASTER_USER_ID,
@@ -45,5 +103,7 @@ export async function POST(request) {
   });
 
   await setFlash("success", "Internship posting added!");
-  return NextResponse.redirect(new URL("/internship", request.url), { status: 303 });
+  return NextResponse.redirect(new URL("/internship", request.url), {
+    status: 303,
+  });
 }

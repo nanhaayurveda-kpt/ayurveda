@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { db } from "@/lib/db";
 import { students, professors, users } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -24,9 +24,9 @@ export default async function AddInternshipPage() {
   const user = userResult[0];
 
   const allStudents = await db
-    .select({ id: students.id, name: students.name, course: students.course, semester: students.semester })
+    .select({ id: students.id, name: students.name, roll_number: students.roll_number })
     .from(students)
-    .where(eq(students.user_id, 1))
+    .where(and(eq(students.user_id, 1), eq(students.semester, "Internship")))
     .orderBy(students.name);
 
   const allProfessors = await db
@@ -43,14 +43,22 @@ export default async function AddInternshipPage() {
         <h1 className="text-xl font-bold text-gray-900">Add Internship Posting</h1>
         <p className="text-gray-500 text-xs mt-0.5">NCISM Compulsory Rotatory Internship</p>
       </div>
+
+      {allStudents.length === 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mb-4 text-xs text-yellow-800">
+          ⚠️ No students in Internship year yet. Promote final-year students to
+          Internship from the <a href="/promote" className="underline font-medium">Promotion page</a> first.
+        </div>
+      )}
+
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <form method="POST" action="/api/internship/add" className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Student <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Intern <span className="text-red-500">*</span></label>
             <select name="student_id" required defaultValue="" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
               <option value="">Select Intern...</option>
               {allStudents.map((s) => (
-                <option key={s.id} value={s.id}>{s.name} — {s.course} {s.semester || ""}</option>
+                <option key={s.id} value={s.id}>{s.name}{s.roll_number ? ` · Roll ${s.roll_number}` : ""}</option>
               ))}
             </select>
           </div>
