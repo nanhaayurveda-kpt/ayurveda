@@ -56,10 +56,6 @@ export default async function AttendancePage({ searchParams }) {
   ).length;
   const notMarked = filteredStudents.filter((s) => !attendanceMap[s.id]).length;
 
-  const absentWithPhone = filteredStudents.filter(
-    (s) => attendanceMap[s.id] === "absent" && s.phone,
-  );
-
   const courseWiseSummary = courses.map((course) => {
     const cStudents = allStudents.filter((s) => s.course === course);
     const present = cStudents.filter(
@@ -207,47 +203,6 @@ export default async function AttendancePage({ searchParams }) {
           )}
         </div>
       </div>
-
-      {/* WhatsApp Absent */}
-      {absentWithPhone.length > 0 && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-5">
-          <p className="text-sm font-semibold text-green-800 mb-3">
-            📲 WhatsApp Absent Parents ({absentWithPhone.length})
-          </p>
-          <div className="space-y-2">
-            {absentWithPhone.map((s) => {
-              const phone = s.phone.replace(/\D/g, "");
-              const fullPhone = phone.startsWith("91") ? phone : `91${phone}`;
-              const msg = encodeURIComponent(
-                `Dear ${s.father_name || "Parent"},\n\n${s.name} (${s.course} ${s.semester || "—"}) is absent today (${selectedDate}). Please inform the college.\n\n— College Management`,
-              );
-              return (
-                <div
-                  key={s.id}
-                  className="flex justify-between items-center bg-white rounded-lg px-3 py-2 border border-green-100"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {s.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {s.father_name || "—"} · {s.phone}
-                    </p>
-                  </div>
-                  <a
-                    href={`https://wa.me/${fullPhone}?text=${msg}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-green-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium"
-                  >
-                    WhatsApp
-                  </a>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {/* Detail View */}
       <div className="space-y-4">
