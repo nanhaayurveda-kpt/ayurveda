@@ -14,40 +14,41 @@ export default async function ReportsPage() {
   const userResult = await db.select().from(users).where(eq(users.email, session.email));
   const user = userResult[0];
 
-  const [courseWiseStudents, courseWiseFees, courseWiseAttendance, examSummary] =
+  const [yearWiseStudents, yearWiseFees, yearWiseAttendance, examSummary] =
     await Promise.all([
       db
-        .select({ course: students.course, count: sql`COUNT(*)` })
+        .select({ semester: students.semester, count: sql`COUNT(*)` })
         .from(students)
         .where(eq(students.user_id, 1))
-        .groupBy(students.course)
-        .orderBy(students.course),
+        .groupBy(students.semester)
+        .orderBy(students.semester),
 
       db
         .select({
-          course: students.course,
-          total_pending: sql`SUM(CASE WHEN ${fees.status} = 'pending' THEN ${fees.amount} ELSE 0 END)`,
-          total_paid: sql`SUM(CASE WHEN ${fees.status} = 'paid' THEN ${fees.amount} ELSE 0 END)`,
-          pending_count: sql`SUM(CASE WHEN ${fees.status} = 'pending' THEN 1 ELSE 0 END)`,
+          semester: students.semester,
+          total_paid: sql`SUM(CASE WHEN ${fees.status} = 'paid' THEN ${fees.amount} WHEN ${fees.status} = 'partial' THEN ${fees.paid_amount} ELSE 0 END)`,
+          total_pending: sql`SUM(CASE WHEN ${fees.status} = 'pending' THEN ${fees.amount} WHEN ${fees.status} = 'partial' THEN ${fees.amount} - ${fees.paid_amount} ELSE 0 END)`,
           paid_count: sql`SUM(CASE WHEN ${fees.status} = 'paid' THEN 1 ELSE 0 END)`,
+          partial_count: sql`SUM(CASE WHEN ${fees.status} = 'partial' THEN 1 ELSE 0 END)`,
+          pending_count: sql`SUM(CASE WHEN ${fees.status} = 'pending' THEN 1 ELSE 0 END)`,
         })
         .from(fees)
         .leftJoin(students, eq(fees.student_id, students.id))
         .where(eq(students.user_id, 1))
-        .groupBy(students.course)
-        .orderBy(students.course),
+        .groupBy(students.semester)
+        .orderBy(students.semester),
 
       db
         .select({
-          course: students.course,
+          semester: students.semester,
           present: sql`SUM(CASE WHEN ${attendance.status} = 'present' THEN 1 ELSE 0 END)`,
           absent: sql`SUM(CASE WHEN ${attendance.status} = 'absent' THEN 1 ELSE 0 END)`,
         })
         .from(attendance)
         .leftJoin(students, eq(attendance.student_id, students.id))
         .where(eq(students.user_id, 1))
-        .groupBy(students.course)
-        .orderBy(students.course),
+        .groupBy(students.semester)
+        .orderBy(students.semester),
 
       db
         .select({
@@ -78,18 +79,18 @@ export default async function ReportsPage() {
       </div>
 
       <div className="space-y-4">
-        {/* Course-wise Students */}
+        {/* Professional Year-wise Students */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-            <h2 className="text-sm font-semibold text-gray-700">🎓 Course-wise Students</h2>
+            <h2 className="text-sm font-semibold text-gray-700">🎓 Professional Year-wise Students</h2>
           </div>
-          {courseWiseStudents.length === 0 ? (
+          {yearWiseStudents.length === 0 ? (
             <p className="text-sm text-gray-400 p-4">No data.</p>
           ) : (
             <div className="divide-y divide-gray-100">
-              {courseWiseStudents.map((row, i) => (
+              {yearWiseStudents.map((row, i) => (
                 <div key={i} className="flex justify-between items-center px-4 py-3">
-                  <p className="text-sm font-medium text-gray-900">{row.course || "—"}</p>
+                  <p className="text-sm font-medium text-gray-900">{row.semester || "—"}</p>
                   <p className="text-sm text-gray-600 font-semibold">{row.count} students</p>
                 </div>
               ))}
@@ -102,16 +103,16 @@ export default async function ReportsPage() {
           <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
             <h2 className="text-sm font-semibold text-gray-700">💰 Fee Collection</h2>
           </div>
-          {courseWiseFees.length === 0 ? (
+          {yearWiseFees.length === 0 ? (
             <p className="text-sm text-gray-400 p-4">No data.</p>
           ) : (
             <div className="divide-y divide-gray-100">
-              {courseWiseFees.map((row, i) => (
+              {yearWiseFees.map((row, i) => (
                 <div key={i} className="px-4 py-3">
-                  <p className="text-sm font-semibold text-gray-900 mb-1">{row.course || "—"}</p>
-                  <div className="flex gap-4 text-xs">
-                    <span className="text-green-600">✓ ₹{row.total_paid || 0} ({row.paid_count || 0})</span>
-                    <span className="text-red-500">✗ ₹{row.total_pending || 0} ({row.pending_count || 0})</span>
+                  <p className="text-sm font-semibold text-gray-900 mb-1">{row.semester || "—"}</p>
+                  <div className="flex flex-wrap gap-4 text-xs">
+                    <span className="text-green-600">✓ Collected ₹{row.total_paid || 0} ({row.paid_count || 0} paid{Number(row.partial_count) > 0 ? ` + ${row.partial_count} partial` : ""})</span>
+                    <span className="text-red-500">✗ Pending ₹{row.total_pending || 0} ({row.pending_count || 0})</span>
                   </div>
                 </div>
               ))}
@@ -124,17 +125,17 @@ export default async function ReportsPage() {
           <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
             <h2 className="text-sm font-semibold text-gray-700">✅ Attendance</h2>
           </div>
-          {courseWiseAttendance.length === 0 ? (
+          {yearWiseAttendance.length === 0 ? (
             <p className="text-sm text-gray-400 p-4">No data.</p>
           ) : (
             <div className="divide-y divide-gray-100">
-              {courseWiseAttendance.map((row, i) => {
+              {yearWiseAttendance.map((row, i) => {
                 const total = (Number(row.present) || 0) + (Number(row.absent) || 0);
                 const pct = total > 0 ? ((Number(row.present) / total) * 100).toFixed(1) : 0;
                 return (
                   <div key={i} className="px-4 py-3">
                     <div className="flex justify-between items-center mb-1.5">
-                      <p className="text-sm font-medium text-gray-900">{row.course || "—"}</p>
+                      <p className="text-sm font-medium text-gray-900">{row.semester || "—"}</p>
                       <p className="text-sm font-semibold text-gray-700">{pct}%</p>
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-1.5">
