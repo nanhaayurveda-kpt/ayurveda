@@ -161,8 +161,7 @@ export default async function AdmissionsPage() {
                               {s.name}
                             </p>
                             <p className="text-xs text-gray-400">
-                              Sem {s.semester || "—"} · Roll{" "}
-                              {s.roll_number || "—"}
+                              {s.semester || "—"} · Roll {s.roll_number || "—"}
                             </p>
                             <p className="text-xs text-gray-400">
                               👤 {s.father_name || "—"} · 📞 {s.phone || "—"}
