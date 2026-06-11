@@ -88,11 +88,17 @@ const TILES = [
     label: "Certificates",
     desc: "TC, Bonafide etc.",
   },
-  {
-    href: "/timetable",
+
+  href: "/timetable",
     icon: "🗓️",
     label: "Timetable",
     desc: "Class schedule",
+  },
+  {
+    href: "/promote",
+    icon: "⬆️",
+    label: "Promotion",
+    desc: "Year-wise promotion",
   },
   { href: "/notices", icon: "📢", label: "Notices", desc: "Notice board" },
   {
