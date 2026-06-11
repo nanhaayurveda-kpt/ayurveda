@@ -88,8 +88,8 @@ const TILES = [
     label: "Certificates",
     desc: "TC, Bonafide etc.",
   },
-
-  href: "/timetable",
+  {
+    href: "/timetable",
     icon: "🗓️",
     label: "Timetable",
     desc: "Class schedule",
@@ -101,6 +101,7 @@ const TILES = [
     desc: "Year-wise promotion",
   },
   { href: "/notices", icon: "📢", label: "Notices", desc: "Notice board" },
+
   {
     href: "/clinical-logbook",
     icon: "🏥",
